@@ -251,4 +251,5 @@ def MergePDFs(filepath,outfile='outpdf.pdf'):
     return
 
 if __name__=="__main__":
-    imgLongsplitimage2A4(sys.argv[1])
+    #imgLongsplitimage2A4(sys.argv[1])
+    pass

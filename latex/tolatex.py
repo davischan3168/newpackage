@@ -118,7 +118,8 @@ def _removef(outpath):
     return
 
 def Singal_File(inFile,mtype='article',pyin=False,\
-                item1_bool=False,item2_bool=False):
+                item1_bool=False,item2_bool=False,\
+                item0_bool=False):
     txt_files={}
     name=os.path.basename(inFile).split('.')[0].replace('&nbsp','')
     outFile='SignalFile.tex'
@@ -146,7 +147,8 @@ def Singal_File(inFile,mtype='article',pyin=False,\
     return
 ###########################################
 def Singal_input(InFile,pyin=False,\
-                 item1_bool=False,item2_bool=False):
+                 item1_bool=False,item2_bool=False,\
+                 item0_bool=False):
     path=os.path.abspath(InFile)
     dname=os.path.dirname(path)
     ss=re.compile('第\w{1,3}[章编]')
@@ -193,7 +195,7 @@ def Singal_input(InFile,pyin=False,\
             cts.append(r'\subsection{%s}'%li.strip())
         elif sss.match(li):
             cts.append(r'\subsubsection{%s}'%li.strip())
-        elif cnum.match(li):
+        elif (cnum.match(li)) and item0_bool:
             cts.append(r'\subsubsection{%s}'%li.strip())
         elif (cnum1.match(li)) and item1_bool:
             ctstmp.append(li.strip())
@@ -226,7 +228,8 @@ def Singal_input(InFile,pyin=False,\
 ######################################
 def Generate_PdfFile(path,OutFile='Main',mtype='pad',\
                      num=None,pyin=False,Total='max',res=True,\
-                     item1_bool=False,item2_bool=False):
+                     item1_bool=False,item2_bool=False,\
+                     item0_bool=False):
     file_list=[]
     path_list=[]        
     if isinstance(path,list):
@@ -266,11 +269,11 @@ def Generate_PdfFile(path,OutFile='Main',mtype='pad',\
             if num is not None:
                 fnum=num.findall(ut.ChNumToArab(f_name))
                 if len(fnum)==0:
-                    txt_files[f_name]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                    txt_files[f_name]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
                 else:
-                    txt_files[fnum[0].zfill(3)]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                    txt_files[fnum[0].zfill(3)]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
             else:
-                txt_files[f_name]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                txt_files[f_name]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
 
                 
     if len(txt_files)>0:
@@ -324,7 +327,8 @@ def Generate_PdfFile(path,OutFile='Main',mtype='pad',\
 ########################################
 def Mains(DirName,OutFile='Main',mtype='pad',num=None,\
           pyin=False,Total='max',\
-          item1_bool=False,item2_bool=False):
+          item1_bool=False,item2_bool=False,\
+          item0_bool=False):
     txt_files={}
     
     for root,dirs,files in os.walk(DirName):
@@ -338,11 +342,11 @@ def Mains(DirName,OutFile='Main',mtype='pad',num=None,\
                 if num is not None:
                     fnum=num.findall(ut.ChNumToArab(f))
                     if len(fnum)==0:
-                         txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                         txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
                     else:
-                         txt_files[fnum[0].zfill(3)]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                         txt_files[fnum[0].zfill(3)]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
                 else:
-                    txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                    txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
 
                 
     if len(txt_files)>0:
@@ -401,7 +405,8 @@ def Mains(DirName,OutFile='Main',mtype='pad',num=None,\
 ###############################################################################3
 def MainsGF(DirName,OutFile='Main',mtype='pad',num=None,\
             pyin=False,Total='max',Research=None,\
-            startw=None,item1_bool=False,item2_bool=False):
+            startw=None,item1_bool=False,item2_bool=False,\
+            item0_bool=False):
     txt_files={}
     rsch=[]
 
@@ -424,17 +429,17 @@ def MainsGF(DirName,OutFile='Main',mtype='pad',num=None,\
                     if len(fnum)==0:
                          txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
                     else:
-                         txt_files[fnum[0].zfill(3)]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                         txt_files[fnum[0].zfill(3)]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
                 elif (num is None) and (Research is not None):
                     for i in rsch:
                         if i in f:
-                            txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                            txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
                 elif (num is None) and (startw is not None):
                     if startw.match(f) is not None:
-                        txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
+                        txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
                     
                 else:
-                     txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)       
+                     txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)       
 
 
 
@@ -499,7 +504,8 @@ def MainsAbs(txtpath,func=abssplit,OutFile='Mainabs',mtype='pad',\
              pyin=False,Total='max',regrex1=None,Research=None,\
              Startw=None,rc=re.compile('\裁判要点\W*(.*?)\W*相关法条'),\
              p1=re.compile('裁判要点'),p2=re.compile('相关法条'),\
-             item1_bool=False,item2_bool=False):
+             item1_bool=False,item2_bool=False,\
+             item0_bool=False):
     txt_files={}
     rsch=[]
 
@@ -552,7 +558,7 @@ def MainsAbs(txtpath,func=abssplit,OutFile='Mainabs',mtype='pad',\
                 pass     
     ss=GFlist(tdir,regrex1=regrex1)
     for i in ss:
-        txt_files[i[0]]=Singal_input(i[1],pyin)
+        txt_files[i[0]]=Singal_input(i[1],pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
     
     if len(txt_files)>0:
         txt_files1=sorted(txt_files.items(),key=lambda txt_files:txt_files[0])
@@ -613,7 +619,8 @@ def MainSpp(path,outdir='itempdit',regrex1=re.compile('检例第(\d*)号'),\
             rc=re.compile('(.*?案\s*（检例第\d*号）)'),\
             p1=re.compile('【要旨】'),p2=re.compile('\【\w*】'),\
             yz=True,OutFile='MainSpp',mtype='pad',\
-            pyin=False,Total='max',item1_bool=False,item2_bool=False):  
+            pyin=False,Total='max',item1_bool=False,item2_bool=False,\
+            item0_bool=False):  
 
 
     if outdir=='':
@@ -623,7 +630,7 @@ def MainSpp(path,outdir='itempdit',regrex1=re.compile('检例第(\d*)号'),\
     ss=GFlist(outdir,regrex1=regrex1)
     txt_files={}
     for i in ss:
-        txt_files[i[0]]=Singal_input(i[1],pyin)
+        txt_files[i[0]]=Singal_input(i[1],pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
     
     if len(txt_files)>0:
         txt_files1=sorted(txt_files.items(),key=lambda txt_files:txt_files[0])
@@ -685,4 +692,5 @@ if __name__=="__main__":
     #d=Singal_File(sys.argv[1])
     #d=Mains(sys.argv[1],num=False)
     #d=Singal_input(sys.argv[1],pyin=True)
+    #MainSpp(sys.argv[1],yz=False)
     pass

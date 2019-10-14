@@ -7,7 +7,7 @@ from thtml.txt2html import _hh
 import shutil
 import os
 
-def getTt(path,rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要旨】'),p2=re.compile('\【\w*】')):
+def getTt(path,rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('\s*【要\s*旨】'),p2=re.compile('\s*【\w*】')):
     """
     
     """
@@ -24,24 +24,26 @@ def getTt(path,rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('
 
         try:
             text=text[1]
-        except:
+        except Exception as e:
+            print(e)
             pass
     #print(len(yzs))
     ftxt.append(text)
     fftxt=ftxt[1:]
     #print(len(fftxt))
+    #"""
     for ii in fftxt:
         try:
-            yz=p1.split(ii)[1]
-            yz=p2.split(yz)[0]
+            yz=p2.split(p1.split(ii)[1])[0].strip()
             #print(yz)
             yzs.append(yz)
         except:
             pass
-        
+    #print(len(yzs))
+    #"""
     return list(zip(tt,fftxt,yzs))
 
-def absSPP(path,tdir='itempdit',rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要旨】'),p2=re.compile('\【\w*】'),yz=True):
+def absSPP(path,tdir='itempdit',rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要旨】'),p2=re.compile('【\w*】'),yz=True):
 
     tt=re.compile('\s*')
 
@@ -65,7 +67,7 @@ def absSPP(path,tdir='itempdit',rc=re.compile('(.*?案\s*（检例第\d*号）)'
 
     return
 
-def absAPPhtml(path,outdir='',regrex1=re.compile('检例第(\d*)号'),rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要旨】'),p2=re.compile('\【\w*】'),yz=True):                           
+def absAPPhtml(path,outdir='',regrex1=re.compile('检例第(\d*)号'),rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要\s*旨】'),p2=re.compile('【\w*】'),yz=True):                           
     if outdir=='':
         outdir='itempdit'
     absSPP(path=path,tdir=outdir,rc=rc,p1=p1,p2=p2,yz=yz)
@@ -90,9 +92,6 @@ def absAPPhtml(path,outdir='',regrex1=re.compile('检例第(\d*)号'),rc=re.comp
     shutil.rmtree(outdir)    
     return
             
-
-
-    return 
 def abstract(path,rc=re.compile('裁判要点\W*(.*?\s*.*?)\W*相关法条')):
     with open(path,encoding='utf8') as f:
         text=f.read()
@@ -111,7 +110,7 @@ def abssplit(path,p1=re.compile('裁判要点'),p2=re.compile('相关法条')):
     if len(cc)==2:
         c1=p2.split(cc[1])
         if len(c1)==2:
-            return c1[0]
+            return c1[0].strip()
         else:
             print('No content for p2')
             return
@@ -119,20 +118,28 @@ def abssplit(path,p1=re.compile('裁判要点'),p2=re.compile('相关法条')):
         print('No content for p1')
         return
     
-def absfile(path,func=abssplit,p1=re.compile('裁判要点'),p2=re.compile('相关法条'),rc=re.compile('裁判要点\W*(.*?\s*.*?)\W*相关法条')):
-    with open(path,encoding='utf8') as f:
-        text=f.read()
-
+def absfile(path,func=abssplit,regrex1=None,\
+            Research=None,Startw=None,p1=re.compile('裁判要点'),\
+            p2=re.compile('相关法条'),rc=re.compile('裁判要点\W*(.*?\s*.*?)\W*相关法条')):
+ 
     files=[]
-    if isinstance(txtpath,list):
-        files.extend(txtpath)
-    elif txtpath is None:
+    if isinstance(path,list):
+        for i in path:
+            if os.path.isfile(i):
+                files.append(i)
+            elif os.path.isdir(i):
+                ss=GFlist(path,regrex1=regrex1,research=Research,startw=Startw)
+                files.extend([i[1] for i in ss])
+    elif isinstance(path,str):
+        if os.path.isfile(path):
+            files.append(path)
+    elif path is None:
         txtpath=os.getcwd()
-        ss=GFlist(txtpath,regrex1=regrex1,research=Research,startw=Startw)
-        files=[i[1] for i in ss]
-    elif os.path.isdir(txtpath):
-        ss=GFlist(txtpath,regrex1=regrex1,research=Research,startw=Startw)
-        files=[i[1] for i in ss]
+        ss=GFlist(path,regrex1=regrex1,research=Research,startw=Startw)
+        files.extend([i[1] for i in ss])
+    elif os.path.isdir(path):
+        ss=GFlist(path,regrex1=regrex1,research=Research,startw=Startw)
+        files.extend([i[1] for i in ss])
     tdir='temp_dir'
     if not os.path.exists(tdir):
         os.mkdir(tdir)
@@ -164,7 +171,13 @@ def absfile(path,func=abssplit,p1=re.compile('裁判要点'),p2=re.compile('相�
     return Tfile
     
 
-def absTFilehtml(txtpath,func=abssplit,rc=re.compile('裁判要点\W*(.*?\s*.*?)\W*相关法条'),p1=re.compile('裁判要点'),p2=re.compile('相关法条'),regrex1=None,Research=None,index=True,Startw=None,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节')):
+def absTFilehtml(txtpath,func=abssplit,\
+                 rc=re.compile('裁判要点\W*(.*?\s*.*?)\W*相关法条'),\
+                 p1=re.compile('裁判要点'),p2=re.compile('相关法条'),\
+                 regrex1=None,Research=None,index=True,Startw=None,\
+                 m1=re.compile(r'^第\w{1,3}[编|篇]'),\
+                 m2=re.compile(r'^第\w{1,3}章'),\
+                 m3=re.compile(r'^第\w{1,3}节')):
     """
     rc:需要提取的主要内容
     regrex1:
@@ -232,4 +245,6 @@ def absTFilehtml(txtpath,func=abssplit,rc=re.compile('裁判要点\W*(.*?\s*.*?)
     return
 
 if __name__=="__main__":
+    import sys
+    #df=getTt(sys.argv[1])
     pass

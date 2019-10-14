@@ -12,14 +12,15 @@ from mswdoc.docx2txt import msdoc2text
 import re
 import sys
 from os.path import basename,splitext
-
-
+from thtml.abstract import absSPP
+import shutil
 def GenerateBookGF(path,regrex1=None,\
                search=None,startw=None,\
                exclude=None,\
                func=Generate_PdfFile,\
                    item1_bool=False,\
                    item2_bool=False,\
+                   item0_bool=False,\
                htmlfile='htmlfile/htmlbook_output',\
                pdffile='htmlbook_Main',mtype='article',\
                num=None,pyin=False,File_num='max',\
@@ -27,7 +28,10 @@ def GenerateBookGF(path,regrex1=None,\
                m2=re.compile(r'^第\w{1,3}章'),\
                m3=re.compile(r'^第\w{1,3}节'),\
                m4=re.compile(r'^\w{1,3}、'),\
-               index=True,res=True):
+                   index=True,res=True,\
+                   Spplit=False,\
+                   rc=re.compile('(.*?案\s*（检例第\d*号）)'),\
+                   p1=re.compile('【要\s*旨】'),p2=re.compile('【\w*】'),yz=True):
 
     """
     regrex:re.compile('\d*'),从文件名中提取中关键字作排序用
@@ -41,6 +45,9 @@ def GenerateBookGF(path,regrex1=None,\
     m4:同上，是4级目录
     
     """
+    if Spplit:
+        absSPP(path,tdir='itempdit',rc=rc,p1=p1,p2=p2,yz=yz)
+        path='itempdit'
     cc=re.compile('([，、:-》.《—_;；〈〉<>【】（）()])*\s*-')
     
     rs=[]
@@ -155,12 +162,14 @@ def GenerateBookGF(path,regrex1=None,\
         elif func.__name__ in ['Generate_PdfFile']:
             func(Final_files,OutFile=pdffile,mtype=mtype,\
                  num=num,pyin=pyin,Total=File_num,\
+                 item0_bool=item0_bool,\
                  item1_bool=item1_bool,item2_bool=item2_bool)
             #os.remove(pdffile+'.pdf','htmlfile/'+pdffile+'.pdf')
             pass
         else:
             print('Please input right function:','C2html','C2htmlBase','txt2htmlv1','txt2html_inonefile','Generate_PdfFile')
-        
+    if Spplit:
+        shutil.rmtree(path)
     return Final_files
 if __name__=="__main__":
     #df= GenerateBookGF(['law/sikao/sifa/','law/sikao/LawDoc/','law/sikao/law/'])

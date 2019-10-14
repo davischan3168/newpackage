@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # -*-coding:utf-8-*-
+from PIL import Image, ImageDraw, ImageFont
+import uuid
+from io import StringIO
+import pygame
 
 def text2png(text):
     # Configurations:
@@ -9,8 +13,7 @@ def text2png(text):
     
     # Don't touch the code below
     #import Image, ImageDraw, ImageFont, uuid
-    from PIL import Image, ImageDraw, ImageFont
-    import uuid
+
     
     # Build rich text for ads
     ad = []

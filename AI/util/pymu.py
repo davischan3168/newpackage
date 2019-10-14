@@ -23,10 +23,11 @@ def rightinput(desc):
 
     return intnum
 
-def pdf2png(pdffile):
+def pdf2png(pdffile,txt_path=''):
     doc = fitz.open(pdffile)
     name=os.path.splitext(os.path.basename(pdffile))[0]
-    textc='pdf2png/onall.txt'
+    if txt_path=='':
+        txt_path='pdf2png/onall.txt'
     flag = rightinput("输入：1：全部页面；2：选择页面\t")
     if flag == 1:
         strat = 0
@@ -38,9 +39,9 @@ def pdf2png(pdffile):
     if not os.path.exists('pdf2png'):
         os.mkdir('pdf2png')
 
-    if os.path.exists(textc):
-        os.remove(textc)
-    ff=open(textc,'a',encoding='utf8')
+    if os.path.exists(txt_path):
+        os.remove(txt_path)
+    ff=open(txt_path,'a',encoding='utf8')
     for pg in range(strat, totaling):
         page = doc[pg]
         zoom = int(100)

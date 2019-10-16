@@ -11,6 +11,14 @@ from pdfminer.pdfinterp import PDFTextExtractionNotAllowed
 
 
 def pdf2txt(PDF_path, TXT_path):
+    if os.path.exists(TXT_path):
+        if TXT_path==''
+            try:
+                os.remove('output_allinone.txt')
+            except:
+                pass
+        else:
+            os.remove(TXT_path) 
     with open(PDF_path, 'rb')as fp:  # 以二进制读模式打开
         praser = PDFParser(fp)  # 用文件对象来创建一个pdf文档分析器
         doc = PDFDocument()  # 创建一个PDF文档
@@ -23,7 +31,8 @@ def pdf2txt(PDF_path, TXT_path):
 
         # 检测文档是否提供txt转换，不提供就忽略
         if not doc.is_extractable:
-            pdf2png(PDF_path,txt_path=TXT_path)
+            #pdf2png(PDF_path,txt_path=TXT_path)
+            pass
         else:
             rsrcmgr = PDFResourceManager()  # 创建PDf 资源管理器 来管理共享资源
             laparams = LAParams()  # 创建一个PDF设备对象
@@ -41,6 +50,10 @@ def pdf2txt(PDF_path, TXT_path):
                             results = x.get_text()
                             # print(results)
                             f.write(results + '\n')
+    if not os.path.exists(TXT_path):
+        pdf2png(PDF_path,txt_path=TXT_path)
+        BD_ocrAllIn1dir('pdf2png',mtype=mtype)
+        print('pdf文件为为图片')                        
     return
 
 def imgLongtoText(longPicpath):

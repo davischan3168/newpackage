@@ -90,6 +90,16 @@ def imgLongto1pdf(input_path, outputpath=''):
     #index=index+1
     c.save()
     return
+def imgLongto1pdf_dir(dirpath):
+    ff=file_name(dirpath)
+    for f in ff:
+        path=os.path.splitext(f)[0]+'.pdf'
+        if not os.path.exists(path):
+            imgLongto1pdf(f)
+
+    return
+    
+
 def BdOcrcrop(src, dstpath=''):
     """
     将一个长图切割成A4大小的数张图
@@ -170,8 +180,8 @@ def file_name(file_dir, suffix =[ ".jpg",'.jpeg','.png']):
  
 
 
-def picsTpdf(f_pdf , filedir, suffix):
-    #f_pdf pdf file path ,include filename
+def picsTpdf(f_pdf, filedir, suffix):
+    #f_pdf pdf file path ,include filename输出的文件名册
     #filedir pic file path
     #suffix pic file suffix examples: .jpg
     (w, h) = landscape(A4)

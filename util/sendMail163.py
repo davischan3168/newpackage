@@ -64,7 +64,7 @@ def sentemail_attachment(host = 'smtp.163.com',port = 465 ,\
         
 if __name__ == '__main__':
     path=sys.argv[1]
-    if os.path.splitext(path)[1].lower() in ['.docx','.html']:
+    if os.path.splitext(path)[1].lower() in ['.docx','.html','.txt']:
         npath=os.path.splitext(path)[0]+'.mobi'
         os.system('ebook-convert %s %s'%(path,npath))
         sentemail_attachment(filename=npath)

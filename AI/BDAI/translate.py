@@ -81,5 +81,5 @@ def BD_trans(text='apple',fromLang='auto',toLang='zh'):
     return ds
 
 if __name__=="__main__":
-    ddd=BD_trans(text=sys.argv[1])
+    #ddd=BD_trans(text=sys.argv[1])
     pass

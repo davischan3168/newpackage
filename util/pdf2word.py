@@ -5,15 +5,14 @@ from configparser import ConfigParser
 from io import StringIO
 from io import open
 from concurrent.futures import ProcessPoolExecutor
-
-from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfinterp import process_pdf
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from docx import Document
+import re
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 
-
-def read_from_pdf(file_path):
+def pdf2Txt(file_path,outfile=None):
     with open(file_path, 'rb') as file:
         resource_manager = PDFResourceManager()
         return_str = StringIO()
@@ -25,6 +24,10 @@ def read_from_pdf(file_path):
         device.close()
 
         content = return_str.getvalue()
+        content = re.sub('\n{2,}','\n',content)
+        if outfile is not None:
+            with open(outfile,'w') as f:
+                f.write(content)
         return_str.close()
         return content
 
@@ -42,8 +45,8 @@ def remove_control_characters(content):
     return content.translate(mpa)
 
 
-def pdf_to_word(pdf_file_path, word_file_path):
-    content = read_from_pdf(pdf_file_path)
+def pdf2Word(pdf_file_path, word_file_path):
+    content = pdf2Txt(pdf_file_path)
     save_text_to_word(content, word_file_path)
 
 
@@ -54,15 +57,15 @@ def main():
 
     tasks = []
     with ProcessPoolExecutor(max_workers=int(config['max_worker'])) as executor:
-        for file in os.listdir(config['pdf_folder']):
-            extension_name = os.path.splitext(file)[1]
+        for f in os.listdir(config['pdf_folder']):
+            extension_name = os.path.splitext(f)[1]
             if extension_name != '.pdf':
                 continue
-            file_name = os.path.splitext(file)[0]
-            pdf_file = config['pdf_folder'] + '/' + file
+            file_name = os.path.splitext(f)[0]
+            pdf_file = config['pdf_folder'] + '/' + f
             word_file = config['word_folder'] + '/' + file_name + '.docx'
-            print('正在处理: ', file)
-            result = executor.submit(pdf_to_word, pdf_file, word_file)
+            print('正在处理: ', f)
+            result = executor.submit(pdf2Word, pdf_file, word_file)
             tasks.append(result)
     while True:
         exit_flag = True
@@ -74,5 +77,21 @@ def main():
             exit(0)
 
 
+
+#一个文件夹下的所有pdf文档转换成txt
+def fileTotxt(fileDir):
+    files=os.listdir(fileDir)
+    tarDir=fileDir+'txt'
+    if not os.path.exists(tarDir):
+        os.mkdir(tarDir)
+    replace=re.compile(r'\.pdf',re.I)
+    for f in files:
+        filePath=fileDir+'\\'+f
+        outPath=tarDir+'\\'+replace.sub('',f)+'.txt'
+        pdf2Txt(filePath,outPath)
+        print("Saved "+outPath)
+
 if __name__ == '__main__':
-    main()
+    pdf2Txt('SignalFile.pdf', 'test.txt')
+    #fileTotxt('这里是目录的路径')
+

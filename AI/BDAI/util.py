@@ -38,7 +38,7 @@ def ReadinChunks_file(fpath,chunk_size=1024):
     wts=ReadInChunks(file_object, chunk_size)
     return wts
 
-p = pyaudio.PyAudio()
+#p = pyaudio.PyAudio()
 def audio_play(fpath):
     #define stream chunk 
     chunk = 1024

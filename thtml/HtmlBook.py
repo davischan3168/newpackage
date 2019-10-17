@@ -29,7 +29,11 @@ def GenerateBookGF(path,regrex1=None,\
                m3=re.compile(r'^第\w{1,3}节'),\
                m4=re.compile(r'^\w{1,3}、'),\
                    index=True,res=True,\
+<<<<<<< HEAD
                    Spp=False,\
+=======
+                   Spplit=False,\
+>>>>>>> 947705713838efd0014618b0300853086d7c0b81
                    rc=re.compile('(.*?案\s*（检例第\d*号）)'),\
                    p1=re.compile('【要\s*旨】'),p2=re.compile('【\w*】'),yz=True):
 
@@ -45,10 +49,16 @@ def GenerateBookGF(path,regrex1=None,\
     m4:同上，是4级目录
     
     """
+<<<<<<< HEAD
     if func.__name__ in ['MainSpp','MainAbs']:
         MainSpp(path,yz=yz,mtype=mtype)
         sys.exit()
             
+=======
+    if Spplit:
+        absSPP(path,tdir='itempdit',rc=rc,p1=p1,p2=p2,yz=yz)
+        path='itempdit'
+>>>>>>> 947705713838efd0014618b0300853086d7c0b81
     cc=re.compile('([，、:-》.《—_;；〈〉<>【】（）()])*\s*-')
     
     rs=[]

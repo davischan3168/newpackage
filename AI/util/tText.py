@@ -5,16 +5,19 @@ from AI.BDAI.ocr import BD_jsonTtext
 from AI.util.tpdf import imgLongsplitimage2A4
 from AI.util.pymu import pdf2png
 from AI.BDAI.ocr import BD_ocrAllIn1dir,BD_jsonTtext,BD_ocr1By1dir
+from AI.BDAI.ocr import BD_jsonTtext
+from AI.util.tpdf import imgLongsplitimage2A4
+from AI.util.pymu import pdf2png
 from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LTTextBoxHorizontal, LAParams
 from pdfminer.pdfinterp import PDFTextExtractionNotAllowed
-
+import os
 
 def pdf2txt(PDF_path, TXT_path='',mtype='A'):
     if os.path.exists(TXT_path):
-        if TXT_path==''
+        if TXT_path=='':
             try:
                 os.remove('output_allinone.txt')
             except:
@@ -35,7 +38,6 @@ def pdf2txt(PDF_path, TXT_path='',mtype='A'):
         if not doc.is_extractable:
             pass
         else:
-            print('可以获取信息，为文字')
             rsrcmgr = PDFResourceManager()  # 创建PDf 资源管理器 来管理共享资源
             laparams = LAParams()  # 创建一个PDF设备对象
             device = PDFPageAggregator(rsrcmgr, laparams=laparams)
@@ -55,7 +57,7 @@ def pdf2txt(PDF_path, TXT_path='',mtype='A'):
     if not os.path.exists(TXT_path):
         pdf2png(PDF_path,txt_path=TXT_path)
         BD_ocrAllIn1dir('pdf2png',mtype=mtype)
-        print('pdf文件为为图片')
+        print('pdf文件为为图片')                        
     return
 
 def imgLongtoText(longPicpath):

@@ -41,6 +41,7 @@ def pdf2png(pdffile,txt_path=''):
 
     if os.path.exists(txt_path):
         os.remove(txt_path)
+        pass
     ff=open(txt_path,'a',encoding='utf8')
     for pg in range(strat, totaling):
         page = doc[pg]
@@ -48,8 +49,8 @@ def pdf2png(pdffile,txt_path=''):
         rotate = int(0)
         trans = fitz.Matrix(zoom / 100.0, zoom / 100.0).preRotate(rotate)
         pm = page.getPixmap(matrix=trans, alpha=False)
-        pm.writePNG('pdf2png/%s_%s.png' %(name, str(pg+1)))
-        ff.write(jsontext('pdf2png/%s_%s.png' %(name, str(pg+1))))
+        pm.writePNG('pdf2png/%s_%s.png' %(name, str(pg+1).zfill(4)))
+        ff.write(jsontext('pdf2png/%s_%s.png' %(name, str(pg+1).zfill(4))))
 
     ff.close()
 

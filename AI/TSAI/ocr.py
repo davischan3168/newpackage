@@ -84,7 +84,7 @@ def TS_ocr_text_dir(fpath):
     for root,dirs,files in os.walk(fpath):
         for f in files:
             #print(f)
-            if os.path.splitext(f)[1] in ['.jpg','.png''.jpeg']:
+            if os.path.splitext(f)[1] in ['.jpg','.png','.jpeg']:
                 f=os.path.abspath(root+'/'+f)
                 #f=str(root+'/'+f)
                 try:
@@ -103,17 +103,19 @@ def TS_ocr_text_dir(fpath):
     return #dtext
                 
 def TS_ocr1By1(path):
-    text='\n'.join(TS_ocrTtext(path))
+    text=''.join(TS_ocrTtext(path))
     #print(text)
     fpath=os.path.abspath(path)
     name=os.path.splitext(path)[0]+'.txt'
-    with open(name,'w',encoding='utf8') as f:
-        f.write(text)
+    if len(text.strip())>0:
+        with open(name,'w',encoding='utf8') as f:
+            f.write(text)
     return text
 
 def TS_ocr1By1dir(dirname):
     for root,dirs,files in os.walk(dirname):
-            if os.path.splitext(f)[1] in ['.jpg','.png''.jpeg']:
+        for f in files:
+            if os.path.splitext(f)[1] in ['.jpg','.png','.jpeg']:
                 f=os.path.abspath(root+'/'+f)
                 try:
                     print(f)
@@ -126,11 +128,11 @@ def TS_ocr1By1dir(dirname):
                     pass
     return
 def TS_ocrAllInOnedir(dirname):
-    Al='output_allinone.txt'
+    Al='output_allinone_ts.txt'
     ff=open(Al,'a',encoding='utf8')
     for root,dirs,files in os.walk(dirname):
         for f in files:
-            if os.path.splitext(f)[1] in ['.jpg','.png''.jpeg']:
+            if os.path.splitext(f)[1] in ['.jpg','.png','.jpeg']:
                 f=os.path.abspath(root+'/'+f)
                 try:
                     ddtext='\n'.join(TS_ocr_text(f))

@@ -49,19 +49,29 @@ def download_audio(words, outputdir='audio/',target_format='wav'):
             elif len(tem)>1:
                 print("Download the voice of sentence fineshed: %s ......"%word)            
     return
-def play_audio(audio, wait=True, sleep=0):
-    wave_obj = sa.WaveObject.from_wave_file(audio)
-    play_obj = wave_obj.play()
-    if wait:
-        play_obj.wait_done()
 
-    return
-
-def download_audio_YX(words, outputdir='audio/',target_format='wav'):
+def download_audio_YX(words, outputdir='audio/',target_format='mp3'):
     if not os.path.exists(outputdir):
         os.mkdir(outputdir)
     for i,word in enumerate(words):
         fpath=os.path.join(outputdir,'%s_%s_'%(str(i).zfill(3),word.replace(' ',''))+'.'+ target_format)
+        if not os.path.exists(fpath):
+            r = requests.get(url='http://dict.youdao.com/dictvoice?audio=' + word +'&type=2',stream=True)
+            with open(fpath, 'wb+') as f:
+                for chunk in r.iter_content(chunk_size=128):
+                    f.write(chunk)
+            tem=word.split(' ')
+            if len(tem)==1:
+                print("Download the voice of word fineshed: %s ......"%word)
+            elif len(tem)>1:
+                print("Download the voice of sentence fineshed: %s ......"%word) 
+    return
+
+def download_audio_WX(words, outputdir='audio/',target_format='mp3'):
+    if not os.path.exists(outputdir):
+        os.mkdir(outputdir)
+    for i,word in enumerate(words):
+        fpath=os.path.join(outputdir,'%s'%word.replace(' ','')+'.'+ target_format)
         if not os.path.exists(fpath):
             r = requests.get(url='http://dict.youdao.com/dictvoice?audio=' + word +'&type=2',stream=True)
             with open(fpath, 'wb+') as f:

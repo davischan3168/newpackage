@@ -5,7 +5,7 @@ from thtml.utilth import GFlist
 from thtml.Tohtml import C2html,C2htmlBase
 from thtml.txt2html import txt2htmlv1,txt2html_inonefile
 from os.path import isfile,isdir
-from latex.tolatex import Generate_PdfFile,MainSpp,MainAbs,
+from latex.tolatex import PdfFile,MainSpp,MainsAbs,Mains
 import os
 import util.ch2num as ut
 from mswdoc.docx2txt import msdoc2text
@@ -17,7 +17,7 @@ import shutil
 def GenerateBookGF(path,regrex1=None,\
                search=None,startw=None,\
                exclude=None,\
-               func=Generate_PdfFile,\
+               func=C2html,\
                    item1_bool=False,\
                    item2_bool=False,\
                    item0_bool=False,\
@@ -29,11 +29,8 @@ def GenerateBookGF(path,regrex1=None,\
                m3=re.compile(r'^第\w{1,3}节'),\
                m4=re.compile(r'^\w{1,3}、'),\
                    index=True,res=True,\
-<<<<<<< HEAD
                    Spp=False,\
-=======
                    Spplit=False,\
->>>>>>> 947705713838efd0014618b0300853086d7c0b81
                    rc=re.compile('(.*?案\s*（检例第\d*号）)'),\
                    p1=re.compile('【要\s*旨】'),p2=re.compile('【\w*】'),yz=True):
 
@@ -49,16 +46,13 @@ def GenerateBookGF(path,regrex1=None,\
     m4:同上，是4级目录
     
     """
-<<<<<<< HEAD
-    if func.__name__ in ['MainSpp','MainAbs']:
-        MainSpp(path,yz=yz,mtype=mtype)
-        sys.exit()
-            
-=======
-    if Spplit:
-        absSPP(path,tdir='itempdit',rc=rc,p1=p1,p2=p2,yz=yz)
-        path='itempdit'
->>>>>>> 947705713838efd0014618b0300853086d7c0b81
+    if func.__name__ in ['MainSpp']:
+        func(path,yz=yz,mtype=mtype)
+        return
+    if func.__name__ in ['MainsAbs']:
+        func(path,pyin=pyin,Startw=startw,mtype=mtype,regrex1=regrex1)
+        return
+
     cc=re.compile('([，、:-》.《—_;；〈〉<>【】（）()])*\s*-')
     
     rs=[]
@@ -170,7 +164,7 @@ def GenerateBookGF(path,regrex1=None,\
         if func.__name__ in ['C2html','txt2htmlv1']:
             func(Final_files,output=htmlfile,m1=m1,m2=m2,m3=m3,index=index)
             pass
-        elif func.__name__ in ['Generate_PdfFile']:
+        elif func.__name__ in ['PdfFile']:
             func(Final_files,OutFile=pdffile,mtype=mtype,\
                  num=num,pyin=pyin,Total=File_num,\
                  item0_bool=item0_bool,\
@@ -178,10 +172,10 @@ def GenerateBookGF(path,regrex1=None,\
             #os.remove(pdffile+'.pdf','htmlfile/'+pdffile+'.pdf')
             pass
         else:
-            print('Please input right function:','C2html','C2htmlBase','txt2htmlv1','txt2html_inonefile','Generate_PdfFile')
+            print('Please input right function:','C2html','C2htmlBase','txt2htmlv1','txt2html_inonefile','PdfFile')
     if Spplit:
         shutil.rmtree(path)
-    return Final_files
+    return# Final_files
 if __name__=="__main__":
     #df= GenerateBookGF(['law/sikao/sifa/','law/sikao/LawDoc/','law/sikao/law/'])
     pass

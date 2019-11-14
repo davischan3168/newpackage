@@ -3,7 +3,7 @@
 import os
 from AI.BDAI.ocr import (BD_jsonTtext,BD_ocrAllIn1dir,BD_ocr1By1dir,BD_table_orc)
 from AI.BDAI.tts import (BD_text2audio,BD_audio2text,BD_textTaudio,BD_audio2textAll)
-from AI.BDAI.conpdf import picsTpdf
+#from AI.BDAI.conpdf import picsTpdf
 #from AI.BDAI.translate import BD_trans
 ################################
 from AI.TSAI.asr import TS_asr_echo

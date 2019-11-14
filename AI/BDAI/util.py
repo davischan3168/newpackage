@@ -116,5 +116,5 @@ def record_audio(filename,DurationT=5):
         
 
 if __name__=="__main__":
-    record_audio(sys.argv[1])
-    #pass
+    #record_audio(sys.argv[1])
+    pass

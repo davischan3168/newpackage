@@ -110,10 +110,10 @@ def C2html(txtpath,output='output',m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.
 ######################################
 def getcsspath():
     if sys.platform.startswith('win'):
-        if os.getcwd() in ['J:\\python']:
+        if os.getcwd() in ['I:\\python']:
             p='packages/thtml/css/worg.css'
         else:
-            p='J:/python/packages/thtml/css/worg.css'
+            p='I:/python/packages/thtml/css/worg.css'
     elif sys.platform in ['linux']:
         if os.getcwd() in ['/media/chen/Davis/python']:
             p='packages/thtml/css/worg.css'

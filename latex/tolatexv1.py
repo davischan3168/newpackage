@@ -234,8 +234,6 @@ def PdfFile(path,OutFile='Main',mtype='pad',\
     path_list=[]        
     if isinstance(path,list):
         for f in path:
-            if isinstance(f,tuple):
-                f=f[1]
             if os.path.isfile(f):
                 file_list.append(f)
             elif os.path.isdir(f):
@@ -273,7 +271,7 @@ def PdfFile(path,OutFile='Main',mtype='pad',\
                 if len(fnum)==0:
                     txt_files[f_name]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
                 else:
-                    txt_files[''.join(fnum).zfill(3)]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
+                    txt_files[fnum[0].zfill(3)]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
             else:
                 txt_files[f_name]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
 

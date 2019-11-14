@@ -17,7 +17,7 @@ import lxml.html
 from lxml import etree
 import re
 import json
-from pandas.compat import StringIO
+from io import StringIO
 from webdata.util import dateu as du
 from webdata.util.netbase import Client
 

@@ -16,7 +16,7 @@ import pandas as pd
 import numpy as np
 from webdata.stock import cons as ct
 import re,sys
-from pandas.compat import StringIO
+from io import StringIO
 from webdata.util import dateu as du
 from webdata.util.formula import MA
 import os

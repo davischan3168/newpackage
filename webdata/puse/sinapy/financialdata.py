@@ -7,7 +7,7 @@ from lxml import etree
 import requests
 from bs4 import BeautifulSoup
 import re
-from pandas.compat import StringIO
+from io import StringIO
 try:
     from urllib.request import urlopen, Request
 except ImportError:

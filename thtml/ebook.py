@@ -12,11 +12,12 @@ def ebookconvert(ifile,mtype='mobi'):
     if os.path.isfile(ifile):
         ifile=os.path.abspath(ifile)
         ofile=os.path.splitext(ifile)[0]+'.'+mtype
-        ofile1=os.path.splitext(ifile)[0]+'.epub'
-        cmd='ebook-convert %s %s'%(ifile,ofile)
-        cmd1='ebook-convert %s %s'%(ofile,ofile1)
+        name=os.path.basename(os.path.splitext(ifile))
+        #ofile1=os.path.splitext(ifile)[0]+'.epub'
+        cmd='ebook-convert %s %s --title %s'%(ifile,ofile,name)
+        #cmd1='ebook-convert %s %s'%(ofile,ofile1)
         os.system(cmd)
-        os.system(cmd1)
+        #os.system(cmd1)
     else:
         sys.exit()
     return

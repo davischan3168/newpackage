@@ -66,5 +66,6 @@ if __name__ == '__main__':
     path=sys.argv[1]
     if os.path.splitext(path)[1].lower() in ['.docx','.html','.txt']:
         npath=os.path.splitext(path)[0]+'.mobi'
-        os.system('ebook-convert %s %s'%(path,npath))
+        name=os.path.basename(os.path.splitext(path)[0])
+        os.system('ebook-convert %s %s --title %s'%(path,npath,name))
         sentemail_attachment(filename=npath)

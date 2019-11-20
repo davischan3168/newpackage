@@ -5,6 +5,8 @@ import re
 from thtml.utilth import (GFlist,make_Mulu_content)
 from thtml.txt2html import _hh
 import shutil
+from thtml.Tohtml import C2html
+from thtml.txt2html import txt2htmlall
 import os
 
 def getTt(path,rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('\s*【要\s*旨】'),p2=re.compile('\s*【\w*】')):
@@ -43,7 +45,7 @@ def getTt(path,rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('
     #"""
     return list(zip(tt,fftxt,yzs))
 
-def absSPP(path,tdir='itempdit',rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要旨】'),p2=re.compile('【\w*】'),yz=True):
+def absSPP(path,tdir='itempdit',rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要\s*旨】'),p2=re.compile('【\w*】'),yz=True):
 
     tt=re.compile('\s*')
 
@@ -67,7 +69,7 @@ def absSPP(path,tdir='itempdit',rc=re.compile('(.*?案\s*（检例第\d*号）)'
 
     return
 
-def absAPPhtml(path,outdir='',regrex1=re.compile('检例第(\d*)号'),rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要\s*旨】'),p2=re.compile('【\w*】'),yz=True):                           
+def absAPPhtmlv1(path,outdir='',regrex1=re.compile('检例第(\d*)号'),rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('【要\s*旨】'),p2=re.compile('【\w*】'),yz=True):                           
     if outdir=='':
         outdir='itempdit'
     absSPP(path=path,tdir=outdir,rc=rc,p1=p1,p2=p2,yz=yz)
@@ -89,6 +91,26 @@ def absAPPhtml(path,outdir='',regrex1=re.compile('检例第(\d*)号'),rc=re.comp
 
     html.write('</body></html>')
     html.close()
+    shutil.rmtree(outdir)    
+    return
+
+def absAPPhtml(path,outdir='',regrex1=re.compile('检例第(\d*)号'),\
+                 rc=re.compile('(.*?案\s*（检例第\d*号）)'),\
+                 p1=re.compile('【要\s*旨】'),\
+                 p2=re.compile('【\w*】'),\
+                 yz=True,func=C2html):
+    """
+    主要是针对最高检察院的指导性案例，对每一个案例进行分类，或提取起裁判要旨
+    """
+    if outdir=='':
+        outdir='itempdit'
+    absSPP(path=path,tdir=outdir,rc=rc,p1=p1,p2=p2,yz=yz)
+    ss=GFlist(outdir,regrex1=regrex1)
+    Tfile=[i[1] for i in ss]
+    if func.__name__=='C2html':
+        func(Tfile)
+    elif func.__name__=="txt2htmlall":
+        func(Tfile,mformat='AIO')
     shutil.rmtree(outdir)    
     return
             
@@ -177,8 +199,10 @@ def absTFilehtml(txtpath,func=abssplit,\
                  regrex1=None,Research=None,index=True,Startw=None,\
                  m1=re.compile(r'^第\w{1,3}[编|篇]'),\
                  m2=re.compile(r'^第\w{1,3}章'),\
-                 m3=re.compile(r'^第\w{1,3}节')):
+                 m3=re.compile(r'^第\w{1,3}节'),\
+                 thtmlfunc=C2html):
     """
+    主要是针对最高法的指导性案例，提取起裁判要旨
     rc:需要提取的主要内容
     regrex1:
     """
@@ -224,23 +248,12 @@ def absTFilehtml(txtpath,func=abssplit,\
             except:
                 pass
                 
-
-    tb,ctt=make_Mulu_content(Tfile,m1=m1,m2=m2,m3=m3,index=index)
-    htmlName='outputabs.html'
-    try:
-        html=open(htmlName,'w',encoding='utf8')
-        html.write(htmlcode)
-        html.write(tb)
-        html.write(ctt)
-    except:
-        html=open(htmlName,'w',encoding='gbk')
-        html.write(htmlcode)
-        html.write(tb)
-        html.write(ctt)
-
-    html.write('</body></html>')
-    html.close()
-    shutil.rmtree(tdir)
+    ss=GFlist(tdir,regrex1=regrex1,research=Research,startw=Startw)
+    if thtmlfunc.__name__=='C2html':
+        thtmlfunc(Tfile)
+    elif thtmlfunc.__name__=="txt2htmlall":
+        thtmlfunc(Tfile,mformat='AIO')                 
+    #shutil.rmtree(tdir)
 
     return
 

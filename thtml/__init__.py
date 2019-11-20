@@ -4,4 +4,5 @@ from thtml.ebook import ebookconvert
 from thtml.pyorg import (Topyorg,Topyhtml,TopyhtmlGF)
 from thtml.utilth import GFlist
 from thtml.HtmlBook import GenerateBookGF
+from thtml.abstract import absAPPhtml,absTFilehtml
 #from thtml.makehtmlbook import (MyHtmlSplit,getfilelist)

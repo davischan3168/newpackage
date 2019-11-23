@@ -218,7 +218,7 @@ def make_Mulu_content(files,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile
                 txt=open(txtName,'r',encoding='utf8')
                 text=txt.readlines()
             except:
-                txt=open(txtName,'r',encoding='gbk')
+                txt=open(txtName,'r',encoding='gb18030')
                 text=txt.readlines()            
             txt.close()
         elif tem[1].lower() in ['.doc','.docx']:
@@ -378,7 +378,7 @@ def make_Mulu_contentv1(files,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compi
                 txt=open(txtName,'r',encoding='utf8')
                 text=txt.readlines()
             except:
-                txt=open(txtName,'r',encoding='gbk')
+                txt=open(txtName,'r',encoding='gb18030')
                 text=txt.readlines()            
             txt.close()
         elif tem[1].lower() in ['.doc','.docx']:

@@ -12,7 +12,7 @@ from thtml.utilth import GFlist
 from mswdoc.docx2txt import msdoc2text
 from thtml.abstract import (abssplit,abstract,absfile,absSPP)
 p=Pinyin()
-cnum=re.compile('([一二三四五六七八九十百千万零]{1,5}、)')
+cnum=re.compile('(^[一二三四五六七八九十百千万零]{1,5}\W*)')
 title=r"""
 \documentclass[myxecjk,msize]{gdhsarticle}%{kindle}
 \iffalse

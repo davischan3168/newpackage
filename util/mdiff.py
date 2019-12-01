@@ -15,7 +15,7 @@ def readfile(filename):
             fileHandle = open(filename,'r',encoding='utf8')
             text = fileHandle.read().splitlines()
         except:
-            fileHandle = open(filename,'r',encoding='gbk')
+            fileHandle = open(filename,'r',encoding='gb18030')
             text = fileHandle.read().splitlines()
         fileHandle.close()
         return text

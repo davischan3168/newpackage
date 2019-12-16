@@ -4,7 +4,7 @@
 from PyPDF2 import PdfFileWriter, PdfFileReader
 import sys
 import os
-def pdfcrop(inf,outf='out.pdf',\
+def pdfcrop(inf,outf=None,\
             left_margin=40,low_margin=40,\
             right_margin=40,up_margin=50):
     """

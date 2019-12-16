@@ -5,8 +5,8 @@ from PyPDF2 import PdfFileWriter, PdfFileReader
 import sys
 import os
 def pdfcrop(inf,outf=None,\
-            left_margin=40,low_margin=40,\
-            right_margin=40,up_margin=50):
+            left_margin=80,low_margin=75,\
+            right_margin=80,up_margin=40):
     """
     (left_margin,low_margin): 取左下角，该点为页面的左下点为原点，
                               left_margin:为横轴上的点
@@ -27,7 +27,7 @@ def pdfcrop(inf,outf=None,\
         page.cropBox.lowerLeft = (left_margin,low_margin)
         page.cropBox.upperRight = (page.mediaBox.getUpperRight_x()-right_margin,page.mediaBox.getUpperRight_y()-up_margin)
         output.addPage(page)
-    if (out=='') or out is None:
+    if (outf=='') or (outf is None):
         outf=os.path.splitext(inf)[0]+'_crop.pdf'
     outputStream = open(outf, "wb")
     output.write(outputStream)

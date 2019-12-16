@@ -5,6 +5,8 @@ import sys
 import re
 import util.ch2num as ut
 from mswdoc.docx2txt import msdoc2text
+from snownlp import SnowNLP
+from pypinyin import pinyin,lazy_pinyin
 
 cc=re.compile('[\W*|-|_]')
 def GFlist(path,regrex1=None,research=None,startw=None):
@@ -190,7 +192,7 @@ def GFlistv1(path,\
         Final_files=[i[1] for i in Final]
     return Final_files
 #############################################
-def make_Mulu_content(files,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),index=True):
+def make_Mulu_content(files,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),index=True,py=False):
     """
     files:为纯文本文件的列表。否则会出现错误。
     """
@@ -330,8 +332,16 @@ def make_Mulu_content(files,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile
                   .replace('<','<')\
                   .replace('\t',"    ").\
                   replace(' ',' ')
-                line='<p>&emsp;&emsp;%s</p>\n'%line
-                #print(line)
+                if py:
+                    hans=SnowNLP(line).words
+                    ruby='<ruby> '
+                    for i in hans:
+                        piy=' '.join(lazy_pinyin(i,1))
+                        ruby=ruby+i+'<rt>%s</rt>'%piy
+                    line="<p>&emsp;&emsp;%s</p>\n"%ruby
+                else:
+                    line='<p>&emsp;&emsp;%s</p>\n'%line
+                    #print(line)
                 ctt.write(line)
             else:
                 pass

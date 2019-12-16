@@ -40,7 +40,7 @@ def getfilelist(path,regrex1=None,Research=None):
 
     return dd
 
-def C2html(txtpath,output='output',m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),m4=re.compile(r'^\w{1,3}、'),index=True):
+def C2html(txtpath,output='output',m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),m4=re.compile(r'^\w{1,3}、'),index=True,py=False):
     """
     txtpath:为单独的文件、一系列文件或一段字符
     并将这些文件中的内容输出到一份html 文件中
@@ -80,7 +80,7 @@ def C2html(txtpath,output='output',m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.
        os.remove(output)
 
     
-    tb,ctt=make_Mulu_content(files,m1=m1,m2=m2,m3=m3,index=index)
+    tb,ctt=make_Mulu_content(files,m1=m1,m2=m2,m3=m3,index=index,py=py)
     try:
         html=open(output,'a',encoding='utf8')
         html.write(ll)
@@ -122,7 +122,7 @@ def getcsspath():
     p=os.path.abspath(p)
     return pathname2url(p)
 ################################################
-def C2htmlBase(txtpath,output='outputbase.html',m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),m4=re.compile(r'^\w{1,3}、'),index=True):
+def C2htmlBase(txtpath,output='outputbase.html',m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),m4=re.compile(r'^\w{1,3}、'),index=True,py=False):
     """
     txtpath:为单独的文件或一段字符
     
@@ -150,7 +150,7 @@ def C2htmlBase(txtpath,output='outputbase.html',m1=re.compile(r'^第\w{1,3}[编|
         sys.exit()
         
 
-    tb,ctt=make_Mulu_content(files,m1=m1,m2=m2,m3=m3,index=index)
+    tb,ctt=make_Mulu_content(files,m1=m1,m2=m2,m3=m3,index=index,py=py)
     if os.path.exists(output):
        os.remove(output)
 
@@ -179,7 +179,7 @@ def C2htmlBase(txtpath,output='outputbase.html',m1=re.compile(r'^第\w{1,3}[编|
     print("\n转换成功,保存在%s"%output)
     return
 ##########################################################
-def C2html_AllinOnev1(txtpath=None,output='output.html',regrex1=re.compile('\d{1,3}'),span=48,split=False,index=False,revs=True):
+def C2html_AllinOnev1(txtpath=None,output='output.html',regrex1=re.compile('\d{1,3}'),span=48,split=False,index=False,revs=True,py=False):
     """
     将目录txtpath下的txt文件内容全部转到output.html文件中
     px:文中排序的基准。
@@ -206,23 +206,23 @@ def C2html_AllinOnev1(txtpath=None,output='output.html',regrex1=re.compile('\d{1
             for i,df in enumerate(dff):
                 if os.path.exists(out%str(i)):
                     os.remove(out%str(i))                
-                C2html(df,index=index)
+                C2html(df,index=index,py=py)
                 os.rename('output.html',out%str(i))
         else:
             out=output+'.html'
-            C2html(files,index=index)
+            C2html(files,index=index,py=py)
             if os.path.exists(out):
                 os.remove(out)            
             os.rename('output.html',out)
     else:
-        C2html(files,index=index)
+        C2html(files,index=index,py=py)
         out=output+'.html'
         if os.path.exists(out):
             os.remove(out)         
         os.rename('output.html',out)
     return
 ####################################################
-def C2html_AllinOne(txtpath=None,regrex1=re.compile('\d{1,3}'),index=True):
+def C2html_AllinOne(txtpath=None,regrex1=re.compile('\d{1,3}'),index=True,py=False):
     """
      将目录txtpath下的txt文件内容全部转到output.html文件中
     px:文中排序的基准。
@@ -238,10 +238,10 @@ def C2html_AllinOne(txtpath=None,regrex1=re.compile('\d{1,3}'),index=True):
         ss=getfilelist(txtpath,regrex1)
         files=[i[1] for i in ss]
 
-    C2html(files,index=index)
+    C2html(files,index=index,py=py)
     return
 ####################################################
-def C2html_AllinOneGF(txtpath=None,regrex1=None,Research=None,index=True,Startw=None):
+def C2html_AllinOneGF(txtpath=None,regrex1=None,Research=None,index=True,Startw=None,py=False):
     """
     将目录txtpath下的txt文件内容全部转到output.html文件中
     px:文中排序的基准。
@@ -257,10 +257,10 @@ def C2html_AllinOneGF(txtpath=None,regrex1=None,Research=None,index=True,Startw=
         ss=GFlist(txtpath,regrex1=regrex1,research=Research,startw=Startw)
         files=[i[1] for i in ss]
 
-    C2html(files,index=index)
+    C2html(files,index=index,py=py)
     return
 ######################################################
-def C2html_OnebyOne(txtpath,index=True):
+def C2html_OnebyOne(txtpath,index=True,py=False):
     """
     将目录txtpath下的txt文件内容逐一转到相应的html文件中
     """
@@ -277,7 +277,7 @@ def C2html_OnebyOne(txtpath,index=True):
             #print(f,txtpath)
             if os.path.splitext(f)[1] in ['.txt']:
                 #print(root+'/'+f)
-                C2htmlBase(txtpath=root+'/'+f,index=index)
+                C2htmlBase(txtpath=root+'/'+f,index=index,py=py)
     return
 
     

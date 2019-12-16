@@ -95,7 +95,7 @@ class MyPDFHandler(object):
         :return: 书签列表
         '''
         bookmarks = []
-        with open(txt_file_path,'r') as fin:
+        with open(txt_file_path,'r',encoding='utf8') as fin:
             for line in fin:
                 line = line.rstrip()
                 if not line:
@@ -111,7 +111,7 @@ class MyPDFHandler(object):
                 # title和page都不为空才添加书签，否则不添加
                 if title and page:
                     try:
-                        print('The title is %s at page %s'%(title,page))
+                        #print('The title is %s at page %s'%(title,page))
                         page = int(page) + page_offset
                         bookmarks.append((title, page))
                     except ValueError as msg:

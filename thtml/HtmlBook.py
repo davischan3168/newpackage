@@ -12,7 +12,7 @@ from mswdoc.docx2txt import msdoc2text
 import re
 import sys
 from os.path import basename,splitext
-from thtml.abstract import absSPP
+from thtml.abstract import absSPP,absAPPhtml,absTFilehtml
 import shutil
 def GenerateBookGF(path,regrex1=None,\
                search=None,startw=None,\

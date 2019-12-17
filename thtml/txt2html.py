@@ -50,7 +50,7 @@ def _hh(txtName):
     return htmlcode1
     
 ##########################################3
-def txt2htmlv1(txtName, output="outputtxt",m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),index=True):
+def txt2htmlv1(txtName, output="outputtxt",m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),index=True,py=False):
     """
     txtName:文件的名称（含所在的文件夹）
     index：  True,将第四节的列入目录
@@ -74,7 +74,7 @@ def txt2htmlv1(txtName, output="outputtxt",m1=re.compile(r'^第\w{1,3}[编|篇]'
 
     htmlName=output
 
-    tb,ctt=make_Mulu_content(files)
+    tb,ctt=make_Mulu_content(files,m1=m1,m2=m2,m3=m3,index=index,py=py)
     if os.path.exists(htmlName):
         os.remove(htmlName)    
     try:
@@ -93,7 +93,7 @@ def txt2htmlv1(txtName, output="outputtxt",m1=re.compile(r'^第\w{1,3}[编|篇]'
     print("\n转换成功,保存在%s"%htmlName)
     return
 ###############################################################
-def txt2html_inonefile(txtName,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),index=True):
+def txt2html_inonefile(txtName,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),index=True,py=False):
     """
     txtName:文件的名称（含所在的文件夹）
     index：  True,将第四节的列入目录
@@ -112,7 +112,7 @@ def txt2html_inonefile(txtName,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.comp
         sys.exit()
     
 
-    tb,ctt=make_Mulu_content(files,m1=m1,m2=m2,m3=m3,index=index)
+    tb,ctt=make_Mulu_content(files,m1=m1,m2=m2,m3=m3,index=index,py=py)
     if os.path.exists(htmlName):
         os.remove(htmlName)
     try:
@@ -131,7 +131,7 @@ def txt2html_inonefile(txtName,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.comp
     print("\n转换成功,保存在%s"%htmlName)
     return
 ###################################################
-def txt2html_odir(txtName,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),index=False):
+def txt2html_odir(txtName,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),index=False,py=False):
     """
     txtName:文件的名称（含所在的文件夹）,或是文件名的list
     index：  True,将第四节的列入目录
@@ -142,9 +142,9 @@ def txt2html_odir(txtName,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r
     if isinstance(txtName,list):
         for f in txtName:
             print(f)
-            txt2html_inonefile(f,m1=m1,m2=m2,m3=m3,index=index)
+            txt2html_inonefile(f,m1=m1,m2=m2,m3=m3,index=index,py=py)
     else:
-        txt2html_inonefile(txtName,m1=m1,m2=m2,m3=m3,index=index)
+        txt2html_inonefile(txtName,m1=m1,m2=m2,m3=m3,index=index,py=py)
     return
 ####################################################
 def txt2htmldir(path=None,func=txt2htmlv1,px='\d{1,3}',index=False):
@@ -184,7 +184,7 @@ def txt2htmldir(path=None,func=txt2htmlv1,px='\d{1,3}',index=False):
         func(dirset,index=index)
     return
 #############################
-def txt2htmlGF(path=None,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),ind=True, regrex1=None,search=None,Startw=None):
+def txt2htmlGF(path=None,m1=re.compile(r'^第\w{1,3}[编|篇]'),m2=re.compile(r'^第\w{1,3}章'),m3=re.compile(r'^第\w{1,3}节'),ind=True, regrex1=None,search=None,Startw=None,py=False):
     """
     path:文件夹的名称,若没有输入参数，则默认为None，即当前目录。
     func:txt2html_odir,形成一个个单独的文件，文件名与源文件相同，并保存在源文件的目录下。
@@ -222,9 +222,9 @@ def txt2htmlall(pathname,mformat='AIO',m1=re.compile(r'^第\w{1,3}[编|篇]'),m2
     if os.path.isfile(pathname):
         if pathname.endswith('.txt'):
             if Current:
-                txt2html_odir(tt,m1=m1,m2=m2,m3=m3,index=index)
+                txt2html_odir(tt,m1=m1,m2=m2,m3=m3,index=index,py=py)
             else:
-                txt2htmlv1(pathname,m1=m1,m2=m2,m3=m3,index=index)
+                txt2htmlv1(pathname,m1=m1,m2=m2,m3=m3,index=index,py=py)
     elif os.path.isdir(pathname):
         for root,dirs,files in os.walk(pathname):
             txts={}
@@ -239,10 +239,10 @@ def txt2htmlall(pathname,mformat='AIO',m1=re.compile(r'^第\w{1,3}[编|篇]'),m2
             for i in dds:
                 tt.append(i[1])
             if mformat=='AIO':
-                txt2htmlv1(tt,m1=m1,m2=m2,m3=m3,index=index)
+                txt2htmlv1(tt,m1=m1,m2=m2,m3=m3,index=index,py=py)
 
             elif mformat=='OBO':
-                txt2html_odir(tt,m1=m1,m2=m2,m3=m3,index=index)
+                txt2html_odir(tt,m1=m1,m2=m2,m3=m3,index=index,py=py)
             else:
                 print('Input right parameter for mformat.... AIO or OBO')
                 sys.exit()

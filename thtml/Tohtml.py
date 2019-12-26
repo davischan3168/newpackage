@@ -117,8 +117,10 @@ def getcsspath():
     elif sys.platform in ['linux']:
         if os.getcwd() in ['/media/chen/Davis/python']:
             p='packages/thtml/css/worg.css'
-        else:
+        elif os.path.exists('/media/chen/Davis/python/'):
             p='/media/chen/Davis/python/packages/thtml/css/worg.css'
+        elif os.path.exists('/media/chen/Davis1/python/'):
+            p='/media/chen/Davis1/python/packages/thtml/css/worg.css'
     p=os.path.abspath(p)
     return pathname2url(p)
 ################################################

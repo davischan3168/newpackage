@@ -71,9 +71,6 @@ def xml2text(xml):
 
 
 def process(docx, img_dir=None):
-
-
-    
     text = u''
 
     # unzip the docx in memory

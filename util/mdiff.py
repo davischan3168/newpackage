@@ -5,6 +5,8 @@
 import difflib
 import string
 import sys
+import os
+from mswdoc.docx2txt import msdoc2text
 
 """
 比较两份文件的不同之处，并以html的格式输出。
@@ -30,10 +32,18 @@ def diff_2files_html(textfile1,textfile2):
         #sys.exit()
 
     else:
-        text1_lines = readfile(textfile1)
-        text2_lines = readfile(textfile2)
+        f1 = os.path.splitext(textfile1)[1]
+        f2 = os.path.splitext(textfile2)[1]
+        if f1.lower() in ['.txt']:
+            text1_lines = readfile(textfile1)
+        elif f1.lower() in ['.doc', '.docx']:
+            text1_lines = msdoc2text(textfile1)
+        if f2.lower() in ['.txt']:
+            text2_lines = readfile(textfile2)
+        elif f2.lower() in ['.doc', '.docx']:
+            text2_lines = msdoc2text(textfile2)            
         d = difflib.HtmlDiff()
-        doc=d.make_file(text1_lines,text2_lines)
+        doc = d.make_file(text1_lines,text2_lines)
         #print(d.make_file(text1_lines,text2_lines))
         f=open('diff_file.html','w')
         f.write(r'<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />')

@@ -67,8 +67,8 @@ def GenerateBookGF(path,regrex1=None,\
     elif isinstance(exclude,str):
         excl.append(exclude)    
 
-    file_list=[]
-    path_list=[]        
+    file_list = []
+    path_list = []        
     if isinstance(path,list):
         for f in path:
             if isfile(f):
@@ -76,60 +76,60 @@ def GenerateBookGF(path,regrex1=None,\
             elif isdir(f):
                 path_list.append(f)
             
-    elif os.path.isfile(path):
+    elif isfile(path):
         file_list.append(path)
     elif isdir(path):
         path_list.append(path)
     elif path is None:
-        txtpath=os.getcwd()
+        txtpath = os.getcwd()
 
     else:
         print('Please in list of dir/file,or dir,file')
         sys.exit()
                    
-    File_tmp=GFlist(path_list)
+    File_tmp = GFlist(path_list)
 
     for ff in File_tmp:
         file_list.append(ff[1])
 
-    only_one=set()
-    fls=[]
-    word=re.compile(r'[\u4e00-\u9fa5]+')
+    only_one = set()
+    fls = []
+    word = re.compile(r'[\u4e00-\u9fa5]+\d+')
     for ff in file_list:
-        aa=os.path.basename(ff)
-        nwd=''.join(word.findall(aa))
+        aa = os.path.basename(ff)
+        nwd = ''.join(word.findall(aa))
         if nwd not in only_one:
             only_one.add(nwd)
             fls.append(ff)
 
-    if len(fls)>0:
-        file_list=fls    
+    if len(fls) > 0:
+        file_list = fls    
 
-    temff=set()    
+    temff = set()    
     if exclude is not None:
         for ff in file_list:
             for ex in excl:
                 if ex in os.path.basename(ff):
                     temff.add(ff)
 
-    File_tmp=[f for f in file_list if f not in temff]
+    File_tmp = [f for f in file_list if f not in temff]
 
-    Final_list={}
+    Final_list = {}
     for f in File_tmp:
         ff=basename(f)
         if regrex1 is not None:
             if splitext(ff)[1].lower() in ['.txt','.doc','.docx']:
-                i1=[i for i in regrex1.findall(ff) if len(i)>0]
-                i2=[i for i in regrex1.findall(ut.ChNumToArab(ff)) if len(i)>0]
-                if len(i1)>0:
-                    num1=int(i1[0])
-                    Final_list[num1]=f
-                elif len(i2)>0:
+                i1 = [i for i in regrex1.findall(ff) if len(i) > 0]
+                i2 = [i for i in regrex1.findall(ut.ChNumToArab(ff)) if len(i) > 0]
+                if len(i1) > 0:
+                    num1 = int(i1[0])
+                    Final_list[num1] = f
+                elif len(i2) > 0:
                     num1= int(i2[0])
-                    Final_list[num1]=f
+                    Final_list[num1] = f
         else:
-            num1=cc.sub('',ff).replace('&nbsp','')
-            Final_list[num1]=f
+            num1 = cc.sub('', ff).replace('&nbsp', '')
+            Final_list[num1] = f
         
     if search is not None:
         Tem={}

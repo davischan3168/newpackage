@@ -153,6 +153,42 @@ def Bookmark2pdf(path,bookmark,page_offset,mode='new',mtype='space'):
     name=os.path.splitext(path)[0]+'_bookmarks.pdf'
     pdf_handler.save2file(name)
     return
-
+def mulut(pfile):
+    readf = open(pfile, encoding='utf8').readlines()
+    lines = []
+    tt = []
+    ttt = []
+    cc = re.compile('^\d+\n$')
+    for line in readf:
+        line = re.sub('…{1,}', '', line)
+        lines.append(line)
+    for i in range(len(lines)):
+        t1 = lines[i]
+        try:
+            t2 = lines[i+1]
+        except:
+            t2 = ''
+        if cc.match(t2):
+            t1 = t1.replace('\n','')
+            tt.append(t1)
+        else:
+            tt.append('@'+t1)
+    for t in tt:
+        if re.match('^@',t):
+            t = re.sub('@','',t)
+        if  re.search('@\d*' ,t) is None:
+            num = ''.join(re.findall('\d*',t))
+            if len(num)>0:
+                rnum='@'+num
+                t=re.sub(num,rnum,t)
+        ttt.append(t)
+    cont = ''.join(ttt)
+    #print(cont)
+    #cont = re.sub('\n{1,}', '@', cont)
+    new = os.path.splitext(pfile)[0]+'_new.txt'
+    f = open(new, 'w', encoding='utf8')
+    f.write(cont)
+    f.close()
+    return
 if __name__=="__main__":
     pass

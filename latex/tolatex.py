@@ -142,8 +142,8 @@ def Singal_File(inFile,mtype='article',pyin=False,\
         for f in files:
             if os.path.splitext(f)[1] in ['.aux','.log','.out','.xdv','.tex']:
                 os.remove('%s'%os.path.abspath(root+'/'+f))
-                pass    
-
+                pass
+    os.remove(txt_files[name])
     return
 ###########################################
 def Singal_input(InFile,pyin=False,\

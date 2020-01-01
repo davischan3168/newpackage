@@ -8,7 +8,9 @@ def ebookconvert(pf):
 
     for i in ['.epub','.mobi']:
         op=os.path.split(pf)[0]+i
-        os.system('ebook-convert %s %s'%(pf,op))
+        name = os.path.splitext(os.path.basename(pf))[0]
+        os.system('ebook-convert %s %s --title %s'%(pf,op,name))        
+        #os.system('ebook-convert %s %s'%(pf,op))
     return
 
 if __name__=="__main__":

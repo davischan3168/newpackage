@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*-coding:utf-8-*-
 
-from thtml.utilth import GFlist
+from thtml.utilth import GFlist,GFlistv2
 from thtml.Tohtml import C2html,C2htmlBase
 from thtml.txt2html import txt2htmlv1,txt2html_inonefile
 from os.path import isfile,isdir
@@ -94,7 +94,7 @@ def GenerateBookGF(path,regrex1=None,\
 
     only_one = set()
     fls = []
-    word = re.compile(r'[\u4e00-\u9fa5]+\d+')
+    word = re.compile(r'[\u4e00-\u9fa5]+\d*')
     for ff in file_list:
         aa = os.path.basename(ff)
         nwd = ''.join(word.findall(aa))
@@ -154,13 +154,13 @@ def GenerateBookGF(path,regrex1=None,\
         else:
             print('没有符合的文件')
             sys.exit()            
-
+            
     if len(Final_list)>0:
         Final=sorted(Final_list.items(),key=lambda item:item[0],reverse=res)
         Final_files=[i[1] for i in Final]
         
-        if res:
-            Final_files
+        #if res:
+        #    Final_files
         if func.__name__ in ['C2html','txt2htmlv1']:
             func(Final_files,output=htmlfile,m1=m1,m2=m2,m3=m3,index=index)
             pass
@@ -175,9 +175,76 @@ def GenerateBookGF(path,regrex1=None,\
             print('Please input right function:','C2html','C2htmlBase','txt2htmlv1','txt2html_inonefile','PdfFile')
     if Spplit:
         shutil.rmtree(path)
-    return# Final_files
+    return#Final_files
+###################################
+def GenerateBookGFv(path,regrex1=None,\
+               search=None,startw=None,\
+               exclude=None,\
+               func=C2html,\
+                   item1_bool=False,\
+                   item2_bool=False,\
+                   item0_bool=False,\
+               htmlfile='htmlfile/htmlbook_output',\
+               pdffile='htmlbook_Main',mtype='article',\
+               num=None,pyin=False,File_num='max',\
+               m1=re.compile(r'^第\w{1,3}[编|篇]'),\
+               m2=re.compile(r'^第\w{1,3}章'),\
+               m3=re.compile(r'^第\w{1,3}节'),\
+               m4=re.compile(r'^\w{1,3}、'),\
+                   index=True,res=True,\
+                   Spp=False,\
+                   Spplit=False,\
+                   rc=re.compile('(.*?案\s*（检例第\d*号）)'),\
+                   p1=re.compile('【要\s*旨】'),p2=re.compile('【\w*】'),yz=True):
+
+    """
+    regrex:re.compile('\d*'),从文件名中提取中关键字作排序用
+    search:str/list,民事诉讼，将文件名中符合含有关键字的文件提取出来
+    startw:re.compile('^ok')，将文件名中以特定字开头的文件提取出来
+    exclude:str/list,刑事诉讼，将含有exclude的文件予以排除
+    num:regrex的作用相同，主要是用于latex的文件中
+    m1:html文件中的一级目录
+    m2:同上，是2级目录g
+    m3:同上,是3级目录
+    m4:同上，是4级目录
+    
+    """
+    if func.__name__ in ['MainSpp']:
+        func(path,yz=yz,mtype=mtype)
+        return
+    if func.__name__ in ['MainsAbs']:
+        func(path,pyin=pyin,Startw=startw,mtype=mtype,regrex1=regrex1)
+        return
+
+    cc=re.compile('([，、:-》.《—_;；〈〉<>【】（）()])*\s*-')
+    
+    Final_list = GFlistv2(path=path,regrex1=regrex1,research=search,startw=startw,exclude=exclude,res=res)
+
+    if len(Final_list)>0:
+        print(Final_list)
+        Final_files=[i[1] for i in Final_list]
+        if res:
+            Final_files.reverse()
+        #if res:
+        #    Final_files
+        if func.__name__ in ['C2html','txt2htmlv1']:
+            func(Final_files,output=htmlfile,m1=m1,m2=m2,m3=m3,index=index,py=pyin)
+            pass
+        elif func.__name__ in ['PdfFile']:
+            func(Final_files,OutFile=pdffile,mtype=mtype,\
+                 num=num,pyin=pyin,Total=File_num,\
+                 item0_bool=item0_bool,\
+                 item1_bool=item1_bool,item2_bool=item2_bool)
+            #os.remove(pdffile+'.pdf','htmlfile/'+pdffile+'.pdf')
+            pass
+        else:
+            print('Please input right function:','C2html','C2htmlBase','txt2htmlv1','txt2html_inonefile','PdfFile')
+    if Spplit:
+        shutil.rmtree(path)
+    return
+
 if __name__=="__main__":
-    #df= GenerateBookGF(['law/sikao/sifa/','law/sikao/LawDoc/','law/sikao/law/'])
+    df= GenerateBookGFv(['law/gongbao/case'],startw=re.compile(r'^201[4-9]'))
     pass
 
 

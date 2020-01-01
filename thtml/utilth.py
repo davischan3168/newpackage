@@ -74,6 +74,106 @@ def GFlist(path,regrex1=None,research=None,startw=None):
             print('没有关于 "%s" 的文件'%research)                
                 
     return dd
+########################################
+def GFlistv2(path,regrex1=None,research=None,startw=None,exclude=None,res=False):
+    """
+    regrex1:为re.compile 的类型
+    startw:re.compile类型
+    research: str or list
+    exclude:  str or list
+    """
+    rs=[]
+    if isinstance(research ,list):
+        rs.extend(research)
+    elif isinstance(research ,str):
+        rs.append(research)
+    excl=[]
+    if isinstance(exclude ,list):
+        excl.extend(exclude)
+    elif isinstance(exclude,str):
+        excl.append(exclude)
+        
+    pathlist=[]
+    filelist = []
+    if isinstance(path,list):
+        for ff in path:
+            if os.path.isfile(ff):
+                filelist.append(ff)
+            elif os.path.isdir(ff):
+                pathlist.append(ff)
+    elif isinstance(path,str):
+        if os.path.isdir(path):
+            pathlist.append(path)
+        
+    ss={}
+    for path in pathlist:
+        for root,ds,fs in os.walk(path):
+            for f in fs:
+                #print(f)
+                if regrex1 is not None:
+                    #print('ok....1')
+                    if os.path.splitext(f)[1].lower() in ['.txt','.doc','.docx']:
+                        i1=[i for i in regrex1.findall(f) if len(i)>0]
+                        i2=[i for i in regrex1.findall(ut.ChNumToArab(f)) if len(i)>0]
+                        if len(i1)>0:
+                            num=int(i1[0])
+                            ss[num]=os.path.abspath(os.path.join(root,f))
+                        elif len(i2)>0:
+                            num= int(i2[0])
+                            ss[num]=os.path.abspath(root+'/'+f)
+                    
+                        #dd=sorted(ss.items(),key=lambda item:item[0])
+                else:
+                    #print('ok ......2')
+                    f1=os.path.splitext(f)[0]
+                    num=cc.sub('',f1).replace('&nbsp','')
+                    ss[num]=os.path.abspath(root+'/'+f)
+                    #dd=sorted(ss.items(),key=lambda item:item[0])
+
+
+                    
+    if research is not None:
+        ddf={}
+        for k,v in ss.items():
+            for rsch in rs:
+                if rsch in k:
+                    ddf[k]=v
+
+        if len(ddf)>0:
+            #print(ddf)
+            #dd=sorted(ddf.items(),key=lambda item:item[0])
+            ss=ddf
+        else:
+            print('没有关于 "%s" 的文件'%research)
+
+    if startw is not None:
+        dff={}
+        for k,v in ss.items():
+            if startw.match(k) is not None:
+                dff[k]=v
+        if len(dff)>0:        
+            #dd=sorted(dff.items(),key=lambda item:item[0])
+            ss=sff
+        #print(dd)
+                
+    temff = set()    
+    if exclude is not None:
+        File_tmp = {}
+        for k,v in ss.items():
+            for ex in excl:
+                if ex in k:
+                    temff.add(k)
+        for k,v in ss.items():
+            #print(k)
+            if k not in temff:
+                File_tmp[k] = v
+        #dd=sorted(File_tmp.items(),key=lambda item:item[0])
+        ss=File_tmp
+    if len(ss)>0:
+        dd=sorted(ss.items(),key=lambda item:item[0])
+    else:
+        print('没有关于 "%s" 的文件'%research)
+    return dd
 #######################################3
 def GFlistv1(path,\
                  regrex1=None,\

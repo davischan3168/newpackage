@@ -153,7 +153,7 @@ def GFlistv2(path,regrex1=None,research=None,startw=None,exclude=None,res=False)
                 dff[k]=v
         if len(dff)>0:        
             #dd=sorted(dff.items(),key=lambda item:item[0])
-            ss=sff
+            ss=dff
         #print(dd)
                 
     temff = set()    

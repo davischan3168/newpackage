@@ -4,6 +4,7 @@ import argparse
 import random
 import time
 import os
+import re
 from collections.abc import Iterable
 import requests
 import simpleaudio as sa
@@ -82,6 +83,31 @@ def download_audio_WX(words, outputdir='audio/',target_format='mp3'):
                 print("Download the voice of word fineshed: %s ......"%word)
             elif len(tem)>1:
                 print("Download the voice of sentence fineshed: %s ......"%word) 
+    return
+csub=re.compile('\s+')
+def EnglishWordAudio_single(word, outputdir='audio/'):
+    word=word.strip()
+    fpath=os.path.join(outputdir,csub.sub('_',word) + '.mp3')
+    if not os.path.exists(fpath):
+        r = requests.get(url='http://dict.youdao.com/dictvoice?audio=' + word +'&type=2',stream=True)
+        with open(fpath, 'wb+') as f:
+            for chunk in r.iter_content(chunk_size=128):
+                f.write(chunk)
+        print('Download %s fineshed...'%word)
+        tem=word.split(' ')
+        if len(tem)==1:
+            print("Download the voice of word fineshed: %s ......"%word)
+        elif len(tem)>1:
+            print("Download the voice of sentence fineshed: %s ......"%word)            
+    return
+
+def EnglishWord_audio_list(wordlist, outputdir='audio/'):
+    if isinstance(wordlist,list):
+        for word in wordlist:
+            try:
+                EnglishWordAudio_single(word, outputdir)
+            except:
+                pass
     return
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ from xpinyin import  Pinyin
 import subprocess
 import shutil
 import util.ch2num as ut
-from thtml.utilth import GFlist
+from thtml.utilth import GFlistv2,GFlist
 from mswdoc.docx2txt import msdoc2text
 from thtml.abstract import (abssplit,abstract,absfile,absSPP)
 p=Pinyin()
@@ -408,98 +408,13 @@ def Mains(DirName,OutFile='Main',mtype='pad',num=None,\
 def MainsGF(DirName,OutFile='Main',mtype='pad',num=None,\
             pyin=False,Total='max',Research=None,\
             startw=None,item1_bool=False,item2_bool=False,\
-            item0_bool=False):
-    txt_files={}
-    rsch=[]
-
-    if isinstance(Research,str):
-        rsch.append(Research)
-    elif isinstance(Research,list):
-        rsch.extend(Research)
-        
-    
-    for root,dirs,files in os.walk(DirName):
-        for f in files:
-            if os.path.splitext(f)[1].lower() in ['.txt','.doc','.docx']:
-                if sys.platform.startswith('win'):
-                    rt1=root.split('\\')
-                    root='/'.join(rt1)
-                pf=root+'/'+f
-                #print(pf)
-                if num is not None:
-                    fnum=num.findall(ut.ChNumToArab(f))
-                    if len(fnum)==0:
-                         txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool)
-                    else:
-                         txt_files[fnum[0].zfill(3)]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
-                elif (num is None) and (Research is not None):
-                    for i in rsch:
-                        if i in f:
-                            txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
-                elif (num is None) and (startw is not None):
-                    if startw.match(f) is not None:
-                        txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
-                    
-                else:
-                     txt_files[f]=Singal_input(pf,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)       
-
-
-
-
-    if len(txt_files)>0:
-        txt_files1=sorted(txt_files.items(),key=lambda txt_files:txt_files[0])
-
-    else:
-        print('No files 适合条件')
-        sys.exit()
-    #print(txt_files1)
-    ##########################3
-    if Total=='max':
-        OutFile1=OutFile+'.tex'
-        fl=open(OutFile1,'w',encoding='utf8')
-        fl.write(latexs[mtype]+'\n\n')        
-        for f in txt_files1:
-            fl.write('\input{%s}'%f[1])
-            fl.write(r'\newpage')
-            #fl.write('\n\n')
-        
-        fl.write(end)
-        fl.close()
-        os.system('xelatex -no-pdf -interaction=nonstopmode %s' %OutFile1)
-        os.system('xelatex -interaction=nonstopmode %s' %OutFile1)
-        _removef(OutFile1)
-        ###########################3
-    elif isinstance(Total,int):
-        for f in txt_files1:
-            txp=[txt_files1[i:i+Total] for i in range(0,len(txt_files),Total)]
-            fn=1
-            for ff in txp:
-                OutFile1=OutFile+'_%s.tex'%str(fn).zfill(2)
-                fl=open(OutFile1,'w',encoding='utf8')
-                fl.write(latexs[mtype]+'\n\n')
-                for f in ff:
-                    fl.write('\input{%s}'%f[1])
-                    fl.write(r'\newpage')
-                    #fl.write('\n\n')
-        
-                fl.write(end)
-                fl.close()
-                os.system('xelatex -no-pdf -interaction=nonstopmode %s' %OutFile1)
-                os.system('xelatex -interaction=nonstopmode %s' %OutFile1)
-                _removef(OutFile1)
-                
-                fn +=1
-        
-    else:
-        print('Total is max out int, please input the right parameter.')
-
-
-    for root,dirs,files in os.walk(DirName):
-        for f in files:
-            if os.path.splitext(f)[1] in ['.tex']:
-                os.remove('%s'%os.path.abspath(root+'/'+f))
-                pass
-
+            item0_bool=False,exclude=None,res=False):
+    df=GFlistv2(path=DirName,regrex1=num,research=Research,startw=startw,exclude=exclude,res=res)
+    dd=[f[1] for f in df]
+    PdfFilev(dd,OutFile=OutFile,mtype=mtype,\
+                     pyin=pyin,Total=Total,\
+                     item1_bool=item1_bool,item2_bool=item2_bool,\
+                     item0_bool=item0_bool)
     return
 ###############################################
 def MainsAbs(txtpath,func=abssplit,OutFile='Mainabs',mtype='pad',\
@@ -687,6 +602,65 @@ def MainSpp(path,outdir='itempdit',regrex1=re.compile('检例第(\d*)号'),\
                 os.remove('%s'%os.path.abspath(root+'/'+f))
                 pass"""
     shutil.rmtree(outdir)
+    return
+######################################
+def PdfFilev(flist,OutFile='Main',mtype='pad',\
+                     pyin=False,Total='max',\
+                     item1_bool=False,item2_bool=False,\
+                     item0_bool=False):
+    txt_files={}
+    for f in flist:
+        name=os.path.splitext(os.path.basename(f))[0]
+        if os.path.splitext(f)[1].lower() in ['.txt','.doc','.docx']:
+            txt_files[name]=Singal_input(f,pyin,item1_bool=item1_bool,item2_bool=item2_bool,item0_bool=item0_bool)
+    txt_files1=[]
+    for k,v in txt_files.items():
+        txt_files1.append((k,v))
+        
+    if Total=='max':
+        OutFile1=OutFile+'.tex'
+        fl=open(OutFile1,'w',encoding='utf8')
+        fl.write(latexs[mtype]+'\n\n')        
+        for ff in txt_files1:
+            fl.write('\input{%s}'%ff[1])
+            fl.write(r'\newpage')
+            #fl.write('\n\n')
+        
+        fl.write(end)
+        fl.close()
+        os.system('xelatex -no-pdf -interaction=nonstopmode %s' %OutFile1)
+        os.system('xelatex -interaction=nonstopmode %s' %OutFile1)
+        _removef(OutFile1)
+        ###########################3
+    elif isinstance(Total,int):
+        for f in txt_files1:
+            txp=[txt_files1[i:i+Total] for i in range(0,len(txt_files),Total)]
+            fn=1
+            for ff in txp:
+                OutFile1=OutFile+'_%s.tex'%str(fn).zfill(2)
+                fl=open(OutFile1,'w',encoding='utf8')
+                fl.write(latexs[mtype]+'\n\n')
+                for f in ff:
+                    fl.write('\input{%s}'%f[1])
+                    fl.write(r'\newpage')
+                    #fl.write('\n\n')
+        
+                fl.write(end)
+                fl.close()
+                os.system('xelatex -no-pdf -interaction=nonstopmode %s' %OutFile1)
+                os.system('xelatex -interaction=nonstopmode %s' %OutFile1)
+                _removef(OutFile1)
+                
+                fn +=1
+        
+    else:
+        print('Total is max out int, please input the right parameter.')
+
+    for f in txt_files1:
+        #print(f[1])
+        os.remove(f[1])
+        pass
+
     return
 ###########################
 

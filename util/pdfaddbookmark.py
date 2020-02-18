@@ -3,6 +3,7 @@
 from PyPDF2 import PdfFileReader as reader,PdfFileWriter as writer
 import os
 import sys
+import re
 
 class PDFHandleMode(object):
     '''
@@ -160,7 +161,8 @@ def mulut(pfile):
     ttt = []
     cc = re.compile('^\d+\n$')
     for line in readf:
-        line = re.sub('…{1,}', '', line)
+        line = re.sub(r'…{1,}\(*', '', line)
+        
         lines.append(line)
     for i in range(len(lines)):
         t1 = lines[i]
@@ -181,10 +183,14 @@ def mulut(pfile):
             if len(num)>0:
                 rnum='@'+num
                 t=re.sub(num,rnum,t)
+                if re.compile(r'^\(@').match(t):
+                    t = re.sub(r'\(' , '', t)
+                    t = re.sub(r'\)$', '', t)
         ttt.append(t)
     cont = ''.join(ttt)
+    cont = re.sub('\n@', '@', cont)
     #print(cont)
-    #cont = re.sub('\n{1,}', '@', cont)
+    #cont = re.sub('\n{1,}\(?', '@', cont)
     new = os.path.splitext(pfile)[0]+'_new.txt'
     f = open(new, 'w', encoding='utf8')
     f.write(cont)

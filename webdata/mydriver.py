@@ -20,11 +20,12 @@ from selenium.common.exceptions import NoAlertPresentException
 def Firefox_hdless():
     options = webdriver.FirefoxOptions()
     options.add_argument('-headless')
-    profile = webdriver.FirefoxProfile()
-    profile.set_preference('permissions.default.image', 2)
-    profile.set_preference('dom.ipc.plugins.enabled.npswf32.dll', 'false')
-    profile.set_preference('javascript.enabled', 'false')
-    browser = webdriver.Firefox(options=options,firefox_profile = profile)
+    #profile = webdriver.FirefoxProfile()
+    #profile.set_preference('permissions.default.image', 2)
+    #profile.set_preference('dom.ipc.plugins.enabled.npswf32.dll', 'false')
+    #profile.set_preference('javascript.enabled', 'false')
+    #browser = webdriver.Firefox(options=options,firefox_profile = profile)
+    browser = webdriver.Firefox(options=options)
     return browser
 """
 def Phantomjs():
@@ -43,7 +44,7 @@ def Chrome_hdless():
     if sys.platform=='win32':
         driver = webdriver.Chrome(options=chrome_options)
     else:
-        driver = webdriver.Chrome(options=chrome_options,executable_path='/usr/bin/chromedriver')
+        driver = webdriver.Chrome(options=chrome_options)#,executable_path='/usr/local/bin/chromedriver')
     return driver
 
 def get_cookies(url):

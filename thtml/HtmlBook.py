@@ -221,7 +221,7 @@ def GenerateBookGFv(path,regrex1=None,\
     Final_list = GFlistv2(path=path,regrex1=regrex1,research=search,startw=startw,exclude=exclude,res=res)
 
     if len(Final_list)>0:
-        print(Final_list)
+        #print(Final_list)
         Final_files=[i[1] for i in Final_list]
         if res:
             Final_files.reverse()
@@ -244,7 +244,7 @@ def GenerateBookGFv(path,regrex1=None,\
     return
 
 if __name__=="__main__":
-    df= GenerateBookGFv(['law/gongbao/case'],startw=re.compile(r'^201[4-9]'))
+    #df= GenerateBookGFv(['law/gongbao/case'],startw=re.compile(r'^201[4-9]'))
     pass
 
 

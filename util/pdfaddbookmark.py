@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*-coding:utf-8-*-
-from PyPDF2 import PdfFileReader as reader,PdfFileWriter as writer
+from PyPDF2 import PdfFileReader, PdfFileWriter
 import os
 import sys
 import re
@@ -25,7 +25,7 @@ class MyPDFHandler(object):
         :param mode: 处理PDF文件的模式，默认为PDFHandleMode.COPY模式
         '''
         # 只读的PDF对象
-        self.__pdf = reader(pdf_file_path)
+        self.__pdf = PdfFileReader(pdf_file_path)
 
         # 获取PDF文件名（不带路径）
         self.file_name = os.path.basename(pdf_file_path)
@@ -37,7 +37,7 @@ class MyPDFHandler(object):
         self.pages_num = self.__pdf.getNumPages()
 
         # 可写的PDF对象，根据不同的模式进行初始化
-        self.__writeable_pdf = writer()
+        self.__writeable_pdf = PdfFileWriter()
         if mode == PDFHandleMode.COPY:
             self.__writeable_pdf.cloneDocumentFromReader(self.__pdf)
         elif mode == PDFHandleMode.NEWLY:
@@ -120,6 +120,23 @@ class MyPDFHandler(object):
 
         return bookmarks
 
+    def add_bookmarks_by_list(self, mylist, page_offset=0):
+        """
+        mylist: 书签的列表，含有书签的名称和所在的页码。[(name,pages)]
+        page_offset: 页码便宜量，为0或正数，即由于封面、目录等页面的
+                      存在，在PDF中实际的绝对页码比在目录中写的页码多
+                       出的差值
+        """
+        bookmarks = []
+        bookmarks.append((mylist[0][0],0+page_offset))
+        for i in range(1,len(mylist)):
+            #print(mylist[i][0],mylist[i-1][1])
+            bookmarks.append((mylist[i][0],mylist[i-1][1]))
+
+        #print(bookmarks)
+        self.add_bookmarks(bookmarks)
+        print('add_bookmarks_by_read_txt success!')
+
     def add_bookmarks_by_read_txt(self,txt_file_path,page_offset = 0):
         '''
         通过读取书签列表信息文本文件，将书签批量添加到PDF文件中
@@ -143,17 +160,38 @@ def Bookmark2pdf(path,bookmark,page_offset,mode='new',mtype='space'):
     else:
         raise('mode is copy or new')
     
-    pdf_handler = MyPDFHandler(path,mode = mode)
+    pdf_handler = MyPDFHandler(path, mode = mode)
     if mtype=='space':
         pdf_handler.add_bookmarks_by_read_txt(bookmark,page_offset = page_offset)
     elif mtype=='at':
         pdf_handler.read_bookmarks_from_txt(bookmark,page_offset=page_offset)
     else:
-        raise('mtype is space or at')
+        raise Exception('mtype is space or at')
     
     name=os.path.splitext(path)[0]+'_bookmarks.pdf'
     pdf_handler.save2file(name)
     return
+
+def Bookmark2pdf_list(path, mylist, page_offset, mode='new'):
+    """
+    path:  pdf file.
+    bookmark: txt_file_path add to the pdf_file 
+    """
+    if mode=='copy':
+        mode=PDFHandleMode.COPY
+    elif mode=='new':
+        mode=PDFHandleMode.NEWLY
+    else:
+        raise Exception('mode is copy or new')
+    
+    pdf_handler = MyPDFHandler(path, mode = mode)
+
+    pdf_handler.add_bookmarks_by_list(mylist,page_offset)
+    
+    name=os.path.splitext(path)[0]+'_bookmarks.pdf'
+    pdf_handler.save2file(name)
+    return
+
 def mulut(pfile):
     readf = open(pfile, encoding='utf8').readlines()
     lines = []

@@ -9,7 +9,9 @@ from reportlab.lib.pagesizes import A4, landscape,portrait
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch,cm
 #from AI.BDAI.ocr import BD_jsonTtext
-from PyPDF2 import PdfFileReader,PdfFileWriter
+from PyPDF2 import PdfFileReader, PdfFileWriter
+from packages.util.pdfaddbookmark import Bookmark2pdf_list
+
 
 def imgLongsplitimage2A4(src, dstpath=''):
     """
@@ -151,6 +153,7 @@ def file_name(file_dir, suffix =[ ".jpg",'.jpeg','.png']):
         for file in files:
             if os.path.splitext(file)[1].lower() in suffix:
                 L.append(os.path.join(root, file))
+    L.sort()
     return L
 
  
@@ -205,9 +208,14 @@ def picsTpdf(f_pdf, filedir, suffix):
     #print("Image to pdf success!")
     return
 
-def MergePDFs(filepath,outfile='outpdf.pdf'):
+def MergePdf_dir(filepath, outfile='outpdf.pdf', mode='new', page_offset = 0):
+    """
+    将目录filepath 下的pdf文件合并在一起，形成一个同意的文件
+    page_offset:应当从第几页开始，若不填写，则代表在最后一页
+    """
     output=PdfFileWriter()
     outputPages=0
+    mylist = []
     pdf_fileName=file_name(filepath, suffix =[".pdf"])
     for each in pdf_fileName:
         print(each)
@@ -221,6 +229,7 @@ def MergePDFs(filepath,outfile='outpdf.pdf'):
         # 获得源pdf文件中页面总数
         pageCount = input.getNumPages()
         outputPages += pageCount
+        mylist.append((each,outputPages))
         print(pageCount)
 
         # 分别将page添加到输出output中
@@ -230,10 +239,12 @@ def MergePDFs(filepath,outfile='outpdf.pdf'):
 
     print("All Pages Number:"+str(outputPages))
     # 最后写pdf文件
-    outputStream=open(filepath+outfile,"wb")
+    outputStream=open(outfile,"wb")
     output.write(outputStream)
     outputStream.close()
-    print("finished")
+    #print("finished")
+    Bookmark2pdf_list(outfile, mylist, mode=mode, page_offset=page_offset)
+    os.remove(outfile)
     return
 
 if __name__=="__main__":

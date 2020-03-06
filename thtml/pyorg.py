@@ -126,7 +126,8 @@ def Topyhtml(pf,search=None):
             pf=pf[:-1]
 
         for root,dirs,files in os.walk(pf):
-            rname=os.path.basename(root)
+            #rname=os.path.basename(root)
+            rname=root
             dline= '\n<li>- d <a href=%s>%s</a> \n</li>\n'%(root,rname)
             try:
                 if not rname.startswith('.'):
@@ -145,8 +146,7 @@ def Topyhtml(pf,search=None):
                     if len(schs)>0:
                         for ns in schs:
                             if ns in filename:
-                                fpath=os.path.join(root,old)
-                                #fpath=urllib.parse.quote(fpath)
+                                fpath=os.path.abspath(os.path.join(root,old))
                                 fpath=pathname2url(fpath)
                                 line='<li><code>[&#xa0;]</code> <a href=%s>%s</a>\n</li>'%(fpath,filename)
                                 try:
@@ -154,8 +154,7 @@ def Topyhtml(pf,search=None):
                                 except Exception as e:
                                     print(e)
                     else:
-                        fpath=os.path.join(root,old)
-                        #fpath=urllib.parse.quote(fpath)
+                        fpath=os.path.abspath(os.path.join(root,old))
                         fpath=pathname2url(fpath)
                         line='<li><code>[&#xa0;]</code> <a href=%s>%s</a>\n</li>'%(fpath,filename)
                         try:
@@ -203,7 +202,7 @@ def Topyhtmlv0(pf):
                 if (files1[1] not in ['.log','.tmp','.tex','.bat','.el','.sh','.lnk','.ini','.py','.org','.gss','._gs','.gsl','.cls','.pyc'])and (files1[0].startswith('~') is False) and (files1[0].startswith('#') is False):
                     filename=files1[0]
                     #fpath=root+'\\'+old
-                    fpath=os.path.join(root,old)
+                    fpath=os.path.abspath(os.path.join(root,old))
                     #fpath=urllib.parse.quote(fpath)
                     fpath=pathname2url(fpath)
                     line='<li><code>[&#xa0;]</code> <a href=%s>%s</a>\n</li>'%(fpath,filename)
@@ -217,47 +216,70 @@ def Topyhtmlv0(pf):
     return
 ######################################
 def TopyhtmlGF(pf,regrex1=None,search=None,index=True,Startw=None):
-
-    pfname=pf.replace('/','')
-    #print(pfname)
+    #print(pf)
+    if isinstance(pf,str):
+        pfname=pf.replace('/','_')
+    elif isinstance(pf,list):
+        pfname='selectdirs'
+    elif pf is None:
+        pfname='selectdirs'
+    else:
+        raise Exception('请输入文件目录')
+    
     htmlf=pfname+'_content.html'
     p=getcsspath()
     ll=title+'\n'+title1+ft%p+title2+'\n'
     if os.path.exists(htmlf):
         os.remove(htmlf)
-    with open(htmlf,'w',encoding='utf8') as f:
-        f.write(ll)
-        f.write('<div id="content"> \n')
-        f.write('<h1 class="title">%s</h1>\n<ul class="org-ul">\n'%pfname)
-        f.flush()
-    
 
     files=[]
-    if isinstance(pf,list):
-        files.extend(pf)
-    elif pf is None:
-        txtpath=os.getcwd()
+    #print('test 1')
+    if pf is None:
+        pf=os.getcwd()
         ss=GFlist(pf,regrex1=regrex1,research=search,startw=Startw)
-        files=[i[1] for i in ss]
-    elif os.path.isdir(pf):
-        ss=GFlist(pf,regrex1=regrex1,research=search,startw=Startw)
-        files=[i[1] for i in ss]
-
+        files.extend([i[1] for i in ss])
+    elif isinstance(pf,list):
+        for ff in pf:
+            if os.path.isdir(ff):
+                files.append(ff)
+                print(ff)
+                ss=GFlist(ff,regrex1=regrex1,research=search,startw=Startw)
+                files.extend([i[1] for i in ss])
+            elif os.path.isfile(ff):
+                files.append(ff)
+    elif isinstance(pf,str):
+        if not os.path.exists(pf):
+            raise Exception('文件不存在,请输入正确的文件或目录')
+            #sys.exit()
+        if os.path.isdir(pf):
+            ss=GFlist(pf,regrex1=regrex1,research=search,startw=Startw)
+            files.extend([i[1] for i in ss])
+        elif os.path.isfile(pf):
+            files.append(pf)        
+        
     with open(htmlf,'w',encoding='utf8') as f:
         f.write(ll)
         f.write('<div id="content"> \n')
         f.write('<h1 class="title">%s</h1>\n<ul class="org-ul">\n'%pfname)
         f.flush()        
 
+    ss = set()
+    #print(files)
     for ff in files:
-        name=os.path.splitext(os.path.basename(ff))[0]
-        #fpath=urllib.parse.quote(ff)
-        fpath=pathname2url(ff)
-        line='<li><code>[&#xa0;]</code> <a href=%s>%s</a>\n</li>'%(fpath,name)
-        try:
-            write_file(htmlf,line)
-        except Exception as e:
-            print(e)
+        if os.path.isfile(ff):
+            dn=os.path.dirname(ff)
+            if dn not in ss:
+                ss.add(dn)
+                rname=os.path.split(dn)[1]
+                dline= '\n<li>- d &ensp;<a href=%s>%s</a> \n</li>\n'%(pathname2url(os.path.abspath(dn)),rname)
+                write_file(htmlf,dline)
+            name=os.path.splitext(os.path.basename(ff))[0]
+            fpath=pathname2url(os.path.abspath(ff))
+            line='<ul>  - <code>[&#xa0;]</code> <a href=%s>%s</a>\n</ul>'%(fpath,name)
+            try:
+                write_file(htmlf,line)
+            except Exception as e:
+                print(e)
         
     write_file(htmlf,r"</ul>"+'\n')
     write_file(htmlf,'</div>\n</body>\n</html>')

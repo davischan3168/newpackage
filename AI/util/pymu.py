@@ -9,7 +9,6 @@ import re
 from time import time
 from AI.BDAI.ocr import BD_jsonTtext as jsontext
 
-
 def rightinput(desc):
     flag=True
     while(flag):

@@ -13,7 +13,7 @@ if sys.platform == "linux":
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
-    driver = webdriver.Chrome(chrome_options=chrome_options)#,executable_path='/usr/bin/chromedriver')
+    driver = webdriver.Chrome(chrome_options=chrome_options)
 else :
     driver = webdriver.PhantomJS()
 
@@ -41,6 +41,57 @@ def waitForLoad(driver):
         except StaleElementReferenceException:
             return
 
+
+def GetAllType(url):
+    driver.get(url)
+    t = {}
+    df = driver.find_elements_by_xpath('//div[@class="main3"]/div[@class="right"]/div[@class="sons"]/div[@class="cont"]/a')
+    for i in df:
+        t[i.text] = i.get_attribute('href')
+
+    return t
+
+def GetItemsFromType(url):
+    driver.get(url)
+    t={}
+    df=driver.find_elements_by_xpath('//div[@class="main3"]/div[@class="left"]/div[@class="sons"]//a')
+    for i in df:
+        t[i.text] = i.get_attribute('href')
+    return t
+
+def Poem_text(url):
+    driver.get(url)
+    waitForLoad(driver)
+    ss=driver.find_elements_by_partial_link_text('展开阅读全文')
+    for i in ss:
+        i.click()
+        waitForLoad(driver)
+
+    t = {}
+    t['title'] = driver.find_element_by_xpath('//div[starts-with(@class,"cont")]//h1').text
+    try:
+        t['poem'] = driver.find_element_by_xpath('//div[starts-with(@id,"contson")]').text
+    except:
+        t['poem']=''
+    try:
+        t['fy']=driver.find_element_by_xpath('//div[starts-with(@id,"fanyiquan")]').text
+    except:
+        t['fy']=''
+    try:
+        t['jx']=driver.find_element_by_xpath('//div[starts-with(@id,"shangxiquan")]').text
+    except:
+        t['jx']=''
+    try:
+        t['pid']=driver.find_element_by_xpath('//div[@class="sons"]/div[@class="tool"]//a[starts-with(@href,"javascript:Play")]').get_attribute('href').split('(')[1].replace(')','')
+
+    except:
+        t['pid']=''
+
+    
+    return t
+
+
+    
 def _getsongsan_urls(url):
     #url='http://so.gushiwen.org/gushi/songsan.aspx'
     urls=[]
@@ -105,5 +156,6 @@ def getSongCiSB(url,path):
     
 
 if __name__=="__main__":
-    cons=getSongCiSB(sys.argv[1],sys.argv[2])    
+    #cons=getSongCiSB(sys.argv[1],sys.argv[2])    
     #text=gushiAuthor(sys.argv[1])
+    pass

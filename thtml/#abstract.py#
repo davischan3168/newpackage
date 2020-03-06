@@ -8,7 +8,7 @@ import shutil
 from thtml.Tohtml import C2html
 from thtml.txt2html import txt2htmlall
 import os
-import sys
+ import sys
 
 def getTt(path,rc=re.compile('(.*?案\s*（检例第\d*号）)'),p1=re.compile('\s*【要\s*旨】'),p2=re.compile('\s*【\w*】')):
     """
@@ -108,10 +108,10 @@ def absAPPhtml(path,outdir='',regrex1=re.compile('检例第(\d*)号'),\
     absSPP(path=path,tdir=outdir,rc=rc,p1=p1,p2=p2,yz=yz)
     ss=GFlist(outdir,regrex1=regrex1)
     Tfile=[i[1] for i in ss]
-    if func.__name__ == 'C2html':
+    if func.__name__=='C2html':
         func(Tfile)
-    elif func.__name__ == "txt2htmlall":
-        func(Tfile,mformat = 'AIO')
+    elif func.__name__=="txt2htmlall":
+        func(Tfile,mformat='AIO')
     shutil.rmtree(outdir)    
     return
             

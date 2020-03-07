@@ -7,19 +7,20 @@ from io import StringIO
 import requests
 import lxml.html
 import re
-import pickle
+#import pickle
 from playsound import playsound
 if sys.platform == "linux":
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
-    driver = webdriver.Chrome(chrome_options=chrome_options)
+    #driver = webdriver.Chrome(chrome_options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
 else :
     driver = webdriver.PhantomJS()
 
 titleset=set()
 
-base='http://so.gushiwen.org'
+base='https://so.gushiwen.org'
 
 def _write(path,content):
     f=open(path,'a')
@@ -74,18 +75,49 @@ def Poem_text(url):
     except:
         t['poem']=''
     try:
-        t['fy']=driver.find_element_by_xpath('//div[starts-with(@id,"fanyiquan") or contains(@class,"yishang")]').text
+        t['tag'] = driver.find_element_by_xpath('//div[@class="left"]/div[@class="sons"]/div[@class="tag"]').text
     except:
-        t['fy']=''
+        t['tag']=''        
     try:
-        t['jx']=driver.find_element_by_xpath('//div[starts-with(@id,"shangxiquan")]').text
+        #t['fy']=driver.find_element_by_xpath('//div[starts-with(@id,"fanyiquan") or contains(@class,"yishang")]').text
+        t['fyz']=driver.find_element_by_xpath('//div[starts-with(@id,"fanyiquan")]').text
+        if t['fyz']=='':
+            t['fyz']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]').text
     except:
-        t['jx']=''
+        t['fyz']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]').text
+        #t['fyz']=''
+    try:
+        t['fany']=driver.find_element_by_xpath('//div[starts-with(@id,"fanyiquan")]//p[1]').text
+        if t['fany']=='':
+            t['fany']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[1]').text
+    except:
+        t['fany']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[1]').text
+    try:
+        t['zhusi']=driver.find_element_by_xpath('//div[starts-with(@id,"fanyiquan")]//p[2]').text
+        if t['zhusi']=='':
+            t['zhusi']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[2]').text
+    except:
+        t['zhusi']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[2]').text
+        #t['fyz']=''        
+    try:
+        t['shangxi']=driver.find_element_by_xpath('//div[starts-with(@id,"shangxiquan")]').text
+    except:
+        t['shangxi']=''
+    try:
+        t['chaod'] = driver.find_element_by_xpath('//p[@class="source"]/a[1]').text
+    except:
+        t['chaod']=''
+    try:
+        t['author'] = driver.find_element_by_xpath('//p[@class="source"]/a[2]').text
+    except:
+        t['author']=''                
     try:
         t['pid']=driver.find_element_by_xpath('//div[@class="sons"]/div[@class="tool"]//a[starts-with(@href,"javascript:Play")]').get_attribute('href').split('(')[1].replace(')','')
 
     except:
         t['pid']=''
+
+    t['href']=url
 
     return t
 

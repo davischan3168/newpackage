@@ -446,11 +446,7 @@ def writeGuwenBySql(datasets,book):
     
     
 if __name__ == "__main__":
-    #XueQiu('000039')
-    #url='http://so.gushiwen.org/type.aspx?p=48&c=%e5%85%83%e4%bb%a3&x=%e6%9b%b2'
-    #dataset1=[]
-    #Gushiwen2Sql(sys.argv[1],sys.argv[2])
-    dataset=Gushiwen2Groupby(sys.argv[1],sys.argv[2])
+     dataset=Gushiwen2Groupby(sys.argv[1],sys.argv[2])
     #元代，81页
     """
     conn = MySQLdb.connect(host="localhost", port=3306,

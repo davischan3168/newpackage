@@ -5,14 +5,51 @@ import time,sys
 from bs4 import BeautifulSoup
 from io import StringIO
 import requests
+import os
 import lxml.html
 import re
+#from mysql.gushiwen2sql import InsertSql
 #import pickle
 from playsound import playsound
+try:
+    import MySQLdb
+except:
+    import pymysql as MySQLdb
+finally:
+    pass
+cmd="insert into MyPoemTable(title,chaodai,author,PoemText,fanyizhushi,fanyi,zhushi,shangxi,Tag,playid,href) value(%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)"
+def InsertSql(datasets,cmd):
+    try:
+        conn = MySQLdb.connect(host="localhost", port=3306, user='root',passwd='801019', db='SDD', charset="utf8")
+    except:
+        pass
+    cur = conn.cursor()
+    try:
+        cur.executemany(cmd,datasets)
+    except:
+        pass
+    conn.commit()
+    print('Finished insert..')
+    cur.close()
+    conn.close()
+    return
+
+sqll = "select href from MyPoemTable"
+def FetchFromSql(cmd):
+    try:
+        conn = MySQLdb.connect(host="localhost", port=3306, user='root',passwd='801019', db='SDD', charset="utf8")
+    except:
+        pass
+    cur = conn.cursor()
+    cur.execute(cmd)
+    #c=[]
+    #c.append(cur.fetchall())
+    return cur.fetchall()
+
 if sys.platform == "linux":
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--disable-gpu')
+    #chrome_options.add_argument('--disable-gpu')
     #driver = webdriver.Chrome(chrome_options=chrome_options)
     driver = webdriver.Chrome(options=chrome_options)
 else :
@@ -33,13 +70,14 @@ def waitForLoad(driver):
     count = 0
     while True:
         count += 1
-        if count > 20:
-            print("Timing out after 10 seconds and returning")
+        if count > 10:
+            print("Timing out after {} seconds.".format(count*0.2))
             return
-        time.sleep(.5)
+        time.sleep(.25)
         try:
             elem == driver.find_element_by_tag_name("html")
-        except StaleElementReferenceException:
+        except:
+            #StaleElementReferenceException:
             return
 
 
@@ -51,7 +89,10 @@ def GetAllType(url):
         t[i.text] = i.get_attribute('href')
 
     return t
-
+def getsqlhref(cmd):
+    href = FetchFromSql(cmd)
+    t = [i[0] for i in href]
+    return set(t)
 def GetItemsFromType(url):
     driver.get(url)
     t={}
@@ -59,6 +100,45 @@ def GetItemsFromType(url):
     for i in df:
         t[i.text] = i.get_attribute('href')
     return t
+
+def GetPoemIfoType(url):
+    """
+    从www.gushiwen.org网址，爬去按类型分类的古诗，并返回相应的内容
+    """
+    type_urls = GetAllType(url)
+    urls = type_urls.values()
+    hrefs = getsqlhref(sqll)
+    Nusep = 'packages/gushici/href.txt'
+    if os.path.exists(Nusep):
+        Nuse = open(Nusep,'r').readlines()
+        hrefs = hrefs.union(Nuse)
+    for turl in urls:
+        poem = []
+        try:
+            Items_urls = GetItemsFromType(turl)
+            uu=Items_urls.values()
+            for num,iurl in enumerate(uu):
+                if iurl not in hrefs:
+                    #print(iurl)
+                    try:
+                        pif = Poem_text(iurl)
+                        poem.append([pif['title'],pif['chaod'],pif['author'],\
+                                     pif['poem'],pif['fyz'],pif['fany'],\
+                                     pif['zhusi'],pif['shangxi'],pif['tag'],\
+                                     pif['pid'],pif['href']])
+                        print('%s: %s'%(num+1,pif['title']))
+                    except Exception as e:
+                        print(e)
+                        with open(Nusep,'a') as f:
+                            f.write(iurl+'\n')
+                            f.flush()
+
+            if len(poem) > 0:
+                InsertSql(poem,cmd)
+        except Exception as e:
+            print(e)
+    return
+            
 
 def Poem_text(url):
     driver.get(url)
@@ -85,20 +165,24 @@ def Poem_text(url):
             t['fyz']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]').text
     except:
         t['fyz']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]').text
-        #t['fyz']=''
+    finally:
+        t['fyz']=''
     try:
         t['fany']=driver.find_element_by_xpath('//div[starts-with(@id,"fanyiquan")]//p[1]').text
         if t['fany']=='':
             t['fany']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[1]').text
     except:
         t['fany']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[1]').text
+    finally:
+        t['fany']=''
     try:
         t['zhusi']=driver.find_element_by_xpath('//div[starts-with(@id,"fanyiquan")]//p[2]').text
         if t['zhusi']=='':
             t['zhusi']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[2]').text
     except:
-        t['zhusi']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[2]').text
-        #t['fyz']=''        
+        t['zhusi']=driver.find_element_by_xpath('//div[contains(@class,"yishang")]//p[2]').text       
+    finally:
+        t['zhusi']=''
     try:
         t['shangxi']=driver.find_element_by_xpath('//div[starts-with(@id,"shangxiquan")]').text
     except:
@@ -113,7 +197,6 @@ def Poem_text(url):
         t['author']=''                
     try:
         t['pid']=driver.find_element_by_xpath('//div[@class="sons"]/div[@class="tool"]//a[starts-with(@href,"javascript:Play")]').get_attribute('href').split('(')[1].replace(')','')
-
     except:
         t['pid']=''
 

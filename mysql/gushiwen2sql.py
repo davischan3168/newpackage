@@ -16,6 +16,7 @@ except:
 import urllib
 from urllib.parse import quote
 import pickle
+from gushici.gushiwenv1 import GetPoemInfoType
 """
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--headless')
@@ -59,6 +60,22 @@ def writePoemBySql(datasets):
     except:
         cur.execute("insert into gushiwenI(title,author,content,yiwen,zhus,shangxi) value(%s, %s, %s,%s,%s,%s)",datasets)
     #cur.execute("insert into gushiwen(title,author,content) value(%s, %s, %s)",[title.encode('utf-8'), author.encode('utf-8'),content.encode('utf-8')])
+    conn.commit()
+    print('Finished insert..')
+    cur.close()
+    conn.close()
+    return
+
+def InsertSql(datasets,cmd="insert into gushiwenI(title,author,content,yiwen,zhus,shangxi,note) value(%s, %s, %s,%s,%s,%s,%s)"):
+    try:
+        conn = MySQLdb.connect(host="localhost", port=3306, user='root',passwd='801019', db='SDD', charset="utf8")
+    except:
+        pass
+    cur = conn.cursor()
+    try:
+        cur.executemany(cmd,datasets)
+    except:
+        pass
     conn.commit()
     print('Finished insert..')
     cur.close()

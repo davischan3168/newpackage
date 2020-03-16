@@ -287,7 +287,10 @@ if __name__=="__main__":
     lf='/home/chen/listen.txt'
  
     Typ = sys.argv[1]
-    #选听写的类型1为每个输入，2为听写以前的听写过的单词
+    #选听写的类型1为每个输入，2为听写以前的听写过的单词\
+
+    2
+    
     if Typ == '1':
         f=open(lf,'a')
         while True:
@@ -298,13 +301,30 @@ if __name__=="__main__":
                 f.flush()
             else:
                 break
-    elif Typ == '2':
+    elif Typ == '2
+\\
+
+wqefde21cdq h':
         f=open(lf,'r').readlines()
         words = set(f)
         #f.close()
         for i,word in enumerate(words):
             print('%s  : %s'%(i+1, word))
             GetEnglishMp3_youdao(word,Ts=3)
+
+
+
+
+
+ vc fdzgohfd gfd <skz flkda jgk
+
+ g ds fdkj<zjd.mgf .zmx
+
+
+
+
+
+
             
         
     

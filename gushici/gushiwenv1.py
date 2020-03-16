@@ -113,28 +113,37 @@ def GetPoemIfoType(url):
         Nuse = open(Nusep,'r').readlines()
         hrefs = hrefs.union(Nuse)
     for turl in urls:
-        poem = []
+        #poem = []
         try:
             Items_urls = GetItemsFromType(turl)
             uu=Items_urls.values()
             for num,iurl in enumerate(uu):
                 if iurl not in hrefs:
                     #print(iurl)
+                    t = []
                     try:
                         pif = Poem_text(iurl)
+                        t.append([pif['title'],pif['chaod'],pif['author'],\
+                                     pif['poem'],pif['fyz'],pif['fany'],\
+                                     pif['zhusi'],pif['shangxi'],pif['tag'],\
+                                     pif['pid'],pif['href']])
+                        """
                         poem.append([pif['title'],pif['chaod'],pif['author'],\
                                      pif['poem'],pif['fyz'],pif['fany'],\
                                      pif['zhusi'],pif['shangxi'],pif['tag'],\
                                      pif['pid'],pif['href']])
+                        """
+                        InsertSql(t, cmd)
                         print('%s: %s'%(num+1,pif['title']))
                     except Exception as e:
-                        print(e)
+                        #print(e)
                         with open(Nusep,'a') as f:
                             f.write(iurl+'\n')
                             f.flush()
-
+            """
             if len(poem) > 0:
                 InsertSql(poem,cmd)
+            """
         except Exception as e:
             print(e)
     return

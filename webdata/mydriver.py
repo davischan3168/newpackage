@@ -64,10 +64,25 @@ def get_cookies(url):
     #driver.quit()
     return cookies
 
+def get(driver, url, search):
+    driver.get(url)
+    driver.implicitly_wait(5)
+    driver.find_element_by_partial_link_text('案例库').lick()
+    driver.implicitly_wait(5)
+
+    driver.find_element_by_id("mainSerachBox").send_keys(search)
+    driver.find_elemant_by_tag_name('button').click()
+
+    
+
+    return
+    
+
 if __name__=="__main__":
     #cook=get_cookies(sys.argv[1])
     #if sys.platform=='win32':
     Fdriver = Firefox_hdless()
     #else:
     Gdriver = Chrome_hdless()
+    url='https://anli.court.gov.cn/static/web/index.html#/alk'
     #pass

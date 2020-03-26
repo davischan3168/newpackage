@@ -289,13 +289,17 @@ if __name__=="__main__":
     Typ = sys.argv[1]
     #选听写的类型1为每个输入，2为听写以前的听写过的单词
     if Typ == '1':
+        with open(lf,'r') as t:
+            wds=set(t.readlines())
         f=open(lf,'a')
         while True:
             word = input('Enter word:').strip()
             if len(word)>0:
-                GetEnglishMp3_youdao(word)
-                f.write(word+'\n')
-                f.flush()
+                GetEnglishMp3_youdao(word,Ts=3)
+                if word not in wds:
+                    wds.add(word)
+                    f.write(word+'\n')
+                    f.flush()
             else:
                 break
     elif Typ == '2':

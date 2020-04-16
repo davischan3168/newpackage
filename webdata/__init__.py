@@ -113,8 +113,8 @@ from webdata.futures.intlfutures import (get_intlfuture)
 from webdata.coins.market import (coins_tick, coins_bar,
                                   coins_snapshot, coins_trade)
 
-from webdata.util.conns import get_apis
-from webdata.util.candle import pandas_candlestick_ohlc
+#from webdata.util.conns import get_apis
+#from webdata.util.candle import pandas_candlestick_ohlc
 from webdata.util.mdiff import diff_2files_html
 #for person aastock.com
 from webdata.puse.aastock import (HK_firatio_data_AAST,HK_code_HKEX,

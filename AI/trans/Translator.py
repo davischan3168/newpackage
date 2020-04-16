@@ -308,7 +308,7 @@ if __name__=="__main__":
         #f.close()
         for i,word in enumerate(words):
             print('%s  : %s'%(i+1, word))
-            GetEnglishMp3_youdao(word,Ts=3)
+            GetEnglishMp3_youdao(word,Ts=4)
             
         
     

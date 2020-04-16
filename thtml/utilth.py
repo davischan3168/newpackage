@@ -106,15 +106,18 @@ def GFlistv2(path,regrex1=None,research=None,startw=None,exclude=None,res=False)
             pathlist.append(path)
         
     ss={}
+    sre = re.compile('^(\d{4}-*\d{2}-*\d{2})')
     for path in pathlist:
         for root,ds,fs in os.walk(path):
             for f in fs:
                 #print(f)
                 if regrex1 is not None:
                     #print('ok....1')
+                    ff=os.path.splitext(f)[0].lower()
+                    ff=sre.sub('',ff)
                     if os.path.splitext(f)[1].lower() in ['.txt','.doc','.docx']:
-                        i1=[i for i in regrex1.findall(f) if len(i)>0]
-                        i2=[i for i in regrex1.findall(ut.ChNumToArab(f)) if len(i)>0]
+                        i1=[i for i in regrex1.findall(ff) if len(i)>0]
+                        i2=[i for i in regrex1.findall(ut.ChNumToArab(ff)) if len(i)>0]
                         if len(i1)>0:
                             num=int(i1[0])
                             ss[num]=os.path.abspath(os.path.join(root,f))
@@ -130,50 +133,41 @@ def GFlistv2(path,regrex1=None,research=None,startw=None,exclude=None,res=False)
                     ss[num]=os.path.abspath(root+'/'+f)
                     #dd=sorted(ss.items(),key=lambda item:item[0])
 
-
-                    
-    if research is not None:
+    
+    if (research is not None):
         ddf={}
         for k,v in ss.items():
             for rsch in rs:
-                if rsch in k:
+                if rsch in os.path.basename(v):
                     ddf[k]=v
-
         if len(ddf)>0:
-            #print(ddf)
-            #dd=sorted(ddf.items(),key=lambda item:item[0])
             ss=ddf
         else:
             print('没有关于 "%s" 的文件'%research)
+            return
 
     if startw is not None:
         dff={}
         for k,v in ss.items():
-            if startw.match(k) is not None:
+            name = os.path.basename(v)
+            if startw.match(v) is not None:
                 dff[k]=v
         if len(dff)>0:        
-            #dd=sorted(dff.items(),key=lambda item:item[0])
             ss=dff
-        #print(dd)
                 
-    temff = set()    
     if exclude is not None:
         File_tmp = {}
         for k,v in ss.items():
             for ex in excl:
-                if ex in k:
-                    temff.add(k)
-        for k,v in ss.items():
-            #print(k)
-            if k not in temff:
-                File_tmp[k] = v
-        #dd=sorted(File_tmp.items(),key=lambda item:item[0])
+                if ex not in os.path.basename(v):
+                    File_tmp[k] = v
         ss=File_tmp
     if len(ss)>0:
-        dd=sorted(ss.items(),key=lambda item:item[0])
+        dd=sorted(ss.items(),key=lambda item:item[0], reverse=res)
+        return dd
     else:
         print('没有关于 "%s" 的文件'%research)
-    return dd
+        return 
 #######################################3
 def GFlistv1(path,\
                  regrex1=None,\

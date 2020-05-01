@@ -12,6 +12,18 @@ from webdata.util.myenum import tonum
 
 def gettxt(url):
     r=requests.get(url,headers=hds())
+    try:
+        txt=r.content.decode('utf8')
+    except:
+        txt=r.text
+    html=lxml.html.parse(StringIO(txt))
+    title=html.xpath('//div[@id="fontzoom"]//h2//text()')
+    html=html.xpath('//div[@id="fontzoom"]//p//text()')
+    text='\n'.join(html)
+    tza=''.join(title)+'\n\n'+text
+    return tza
+def gettxtv1(url):
+    r=requests.get(url,headers=hds())
     txt=r.content.decode('utf8')
     html=lxml.html.parse(StringIO(txt))
     title=html.xpath('//div[@class="detail_tit"]/text()')
@@ -20,59 +32,45 @@ def gettxt(url):
     tza=title[0]+'\n\n'+text
     return tza
 
-def getlist(url):
+def getlist(url,GCase=True):
+    rr=re.compile('(^http://)|(^https://)')
     r=requests.get(url,headers=hds())
     txt=r.content.decode('utf8')
-    #print(txt)
     html=lxml.html.parse(StringIO(txt))
     lis=html.xpath('//div[@class="commonList_con"]/ul[@class="li_line"]/li')
     datasets={}
     for li in lis:
         name=re.sub(r'\s*','',li.xpath('a/text()')[0].strip())
         name=name.replace('“','').replace('”','')
-        print(name)
-        href='http://www.spp.gov.cn'+li.xpath('a/@href')[0]
-        if name.endswith('指导性案例'):
+        tm=li.xpath('span/text()')[0].strip()
+        href=li.xpath('a/@href')[0].strip()
+        name=tm+name
+        if not rr.match(href):
+            href='http://www.spp.gov.cn'+li.xpath('a/@href')[0]        
+        #print(name,href)
+        if (name.endswith('指导性案例')) and GCase:
             datasets[name]=href
-    """
-    nxp=html.xpath('//ul[@id="page_div"]/li/a[text()="下一页"]/@href')
-    nxtt=[]
-    while len(nxp)>0:
-        ull='http://www.court.gov.cn'+nxp[0]
-        if ull not in nxtt:
-            r=requests.get(ull,headers=hds())
-            print(ull)
-            txt=r.text
-            html=lxml.html.parse(StringIO(txt))
-            lis=html.xpath('//div[@id="container"]/div[@class="sec_list"]/ul/li')
-            nxp=html.xpath('//ul[@id="yw1"]/li/a[text()="下一页"]/@href')
-            for li in lis:
-                #name=li.xpath('a/@title')[0].strip()
-                name=re.sub(r'\s*','',li.xpath('a/@title')[0].strip())
-                name=name.replace('“','').replace('”','')
-                href='http://www.court.gov.cn'+li.xpath('a/@href')[0]
-                if name.startswith('指导案例'):
-                    datasets[name]=href
-            
         else:
-            break
-    """
+            datasets[name]=href
     return datasets
 
-def SPPlawcase(url='http://www.spp.gov.cn/spp/jczdal/index.shtml'):
+def SPPlawcase(url='http://www.spp.gov.cn/spp/jczdal/index.shtml',GCase=True,mtype='case'):
     urls=getlist(url)
     n=1
     for k,v in urls.items():
-        path='law/casespp/'+k+'.txt'
+        if mtype == 'case':
+            path='law/casespp/'+k+'.txt'
+        elif mtype=='spp':
+            path='law/sikao/spp/'+k+'.txt'
+        elif mtype == 'sppdoc':
+            path='law/sikao/sppdoc/'+k+'.txt'
         #print(n)
         #n=n+1
         #if n>10:
         #    break
         if not os.path.exists(path):
-            #print(k,v)
-
+            print(v)
             text=gettxt(v)
-            #print(text)
             try:
                 f=open(path,'w',encoding='utf8')
                 f.write(text)
@@ -118,9 +116,10 @@ if __name__=="__main__":
     #url='http://www.court.gov.cn/fabu-gengduo-77.html'
     #lawcase(url)
     SPPlawcase()
-    SPPtohtml(func=wd.txt2htmlv1)
-    os.rename('output.html','最高检指导案例.html')
+    #SPPtohtml(func=wd.txt2htmlv1)
+    #os.rename('outputtxt.html','最高检指导案例.html')
     #lawcase(sys.argv[1])
+    pass
     
     
     

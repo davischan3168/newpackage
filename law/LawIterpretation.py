@@ -59,7 +59,7 @@ def getsfjs():
 
     return
 
-def LawInterpretation(url='http://www.court.gov.cn/fabu-gengduo-16.html',pgs=13):
+def LawInterpretation(url='http://www.court.gov.cn/fabu-gengduo-16.html',pgs=3):
     uls=[]
     datasets={}
     uls.append(url)
@@ -79,8 +79,10 @@ def LawInterpretation(url='http://www.court.gov.cn/fabu-gengduo-16.html',pgs=13)
             name=re.sub(r'\s*','',li.xpath('a/@title')[0].strip())
             name=name.replace('“','').replace('”','').replace(':','：').replace('&nbsp','')
             #print(name)
+            tm=li.xpath('i/text()')[0]
             href='http://www.court.gov.cn'+li.xpath('a/@href')[0]
             #if name.startswith('指导案例'):
+            name=tm+'_'+name
             datasets[name]=href
 
     for tt,ul in datasets.items():
@@ -103,6 +105,55 @@ def LawInterpretation(url='http://www.court.gov.cn/fabu-gengduo-16.html',pgs=13)
                 f.close()
             time.sleep(0.1)    
     return
+
+def LawDocument(url='http://www.court.gov.cn/fabu-gengduo-17.html',pgs=3):
+    uls=[]
+    datasets={}
+    uls.append(url)
+    if pgs>1:
+        for p in range(2,pgs+1):
+            url='http://www.court.gov.cn/fabu-gengduo-17.html?page=%s'%p
+            uls.append(url)
+
+    for url in uls:
+        r=requests.get(url,headers=hds())
+        #urls=[]
+        txt=r.content.decode('utf8')
+        html=lxml.html.parse(StringIO(txt))
+        lis=html.xpath('//div[@id="container"]/div[@class="sec_list"]/ul/li')
+        
+        for li in lis:
+            name=re.sub(r'\s*','',li.xpath('a/@title')[0].strip())
+            name=name.replace('“','').replace('”','').replace(':','：').replace('&nbsp','')
+            #print(name)
+            href='http://www.court.gov.cn'+li.xpath('a/@href')[0]
+            #if name.startswith('指导案例'):
+            tm=li.xpath('i/text()')[0]
+            name=tm+'_'+name
+            datasets[name]=href
+
+    for tt,ul in datasets.items():
+        path='law/sikao/LawDoc/'+tt+'.txt'
+        
+        if not os.path.exists(path):
+            rr=requests.get(ul,headers=hds())
+            soup=BeautifulSoup(rr.text,'lxml')
+            txt=soup.find('div',attrs={'class','txt_txt'}).text
+            print("getting file %s"%path)
+            try:
+                f=open(path,'w',encoding='utf8')
+                f.write(txt)
+                f.close()
+            except:
+                f=open(path,'w',encoding='gbk')
+                f.write(txt)
+                f.close()
+            finally:
+                f.close()
+            time.sleep(0.1)    
+    return
+
+
 
 def Interpretation2html(path='law/sikao/sifa',func=wd.txt2html_odir,index=False):
     """
@@ -127,7 +178,10 @@ def Interpretation2html(path='law/sikao/sifa',func=wd.txt2html_odir,index=False)
 
 if __name__=="__main__":
     #getsfjs()
-    LawInterpretation()
+    #LawInterpretation()
         
-    Interpretation2html(func=wd.txt2htmlv1)
-    os.rename('output.html','司法解释.html')
+    #Interpretation2html(func=wd.txt2htmlv1)
+    #os.rename('outputtxt.html','司法解释.html')
+    LawDocument()
+    LawInterpretation()
+    pass

@@ -84,7 +84,7 @@ def lawcase(url):
 
     return
 
-def lawcaseII(url='http://www.court.gov.cn/fabu-gengduo-77.html',pgs=1):
+def lawcaseII(url='http://www.court.gov.cn/fabu-gengduo-77.html',pgs=2):
     uls=[]
     datasets={}
     uls.append(url)
@@ -160,7 +160,7 @@ if __name__=="__main__":
     #lawcase(url)
     lawcaseII()
     Lawtohtml(func=wd.txt2htmlv1)
-    os.rename('output.html','最高法指导性案例.html')
+    #os.rename('outputtxt.html','最高法指导性案例.html')
     #lawcase(sys.argv[1])
     
     

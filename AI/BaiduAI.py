@@ -19,7 +19,6 @@ class BaiDAI():
         self.__API_KEYo = 'KxCS71VeSUFLk00pUvk641Xz'
         self.__SECRET_KEYo = 'R8cnb80t6CmYXefE7aYzhro1goMLCjyZ'
         self.cliento = AipOcr(self.__APP_IDo, self.__API_KEYo, self.__SECRET_KEYo)
-        self.client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
         
     def __getToken(self):
         r = requests.get(self.__gT%(self.__API_KEY, self.__SECRET_KEY))
@@ -153,3 +152,5 @@ class BaiDAI():
             temp=self.cliento.tableRecognition(image,options)
             s=json.loads(temp['result']['result_data'])
             return s['forms'][0]['body']
+if __name__ == "__main__":
+    pass

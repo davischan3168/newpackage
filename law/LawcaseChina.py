@@ -72,7 +72,7 @@ def spiderText(url):
 
     gtext = []
     tt = soup.find('div', attrs = {'class','detail_txt'})
-    if tt.p:
+    if tt.get('p',False):
         tt = tt.find_all('p')
         for i in tt:
             gtext.append(i.text)
@@ -84,6 +84,7 @@ def spiderText(url):
 
 def LawChinaCasev1(hrefdict):
     for k, v in hrefdict.items():
+        k = k.replace(':',"：").replace('?','？').replace('/','_')
         path = 'law/casechina/'+k[-10:]+k[:-10]+'.txt'
         if not os.path.exists(path):
             try:
@@ -93,7 +94,7 @@ def LawChinaCasev1(hrefdict):
                     f.write(txt)
                 print('Downloaded the file: %s'%path)
             except Exception as e:
-                print(e)
+                print(e,v,k)
                 pass
     return    
 
@@ -101,6 +102,7 @@ def LawChinaCasev1(hrefdict):
 def LawChinaCase(url):
     hrefs = getulist(url)
     for k, v in hrefs.items():
+        k = k.replace(':',"：").replace('?','？').replace('/','_')
         path = 'law/casechina/'+k[-10:]+k[:-10]+'.txt'
         if not os.path.exists(path):
             try:
@@ -115,7 +117,9 @@ def LawChinaCase(url):
     return
 
 if __name__ == "__main__":
-    #url='http://cicc.court.gov.cn/html/1//218/62/163/index.html'
-    #LawBJCase(1)
-    #df=getUrls(url,page=1)
+    ll=zdx+dx+qt
+    ddss={}
+    for l in ll:
+    ddss.update(getulist(l))
+    LawChinaCasev1(ddss)
     pass

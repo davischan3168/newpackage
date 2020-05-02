@@ -10,6 +10,10 @@ requests.packages.urllib3.disable_warnings()
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += 'HIGH:!DH:!aNULL'
 import os
 from bs4 import BeautifulSoup
+from lxml import html
+from lxml import etree
+from io import StringIO
+
 def getUrls(page = 2):
     #http://www.bjcourt.gov.cn/zdal/index.htm?c=100015001
     url='http://www.bjcourt.gov.cn/zdal/index.htm?c=10001500%s'
@@ -57,13 +61,40 @@ def spiderText(url):
     text = '\n\n'.join(gtext)
     return text
 
+def spiderText_lxml(url):
+    driver = requests.Session()
+    r = driver.get(url, verify = False)
+    html1 = html.parse(StringIO(r.text))
+    turl = 'http://www.bjcourt.gov.cn'+''.join(html1.xpath('//iframe[@id="ifm"]/@src'))
+    rr = driver.get(turl, verify = False)
+    html2 = html.parse(StringIO(rr.text))
+    tt = html2.xpath('//p')
+
+    gtext = []
+    for t in tt:
+        if t.get('span',False):
+            txt=t.xpath('span//text()')
+            txt1=''.join(txt)
+            gtext.append(txt1)
+        else:
+            txt= t.xpath('./text()')
+            txt1='\n'.join(txt)
+            gtext.append(txt1)
+            #print(2, txt1)
+
+    #tem = [i for i in gtext if len(i.strip())>0]
+    
+    text = '\n\n'.join(gtext)
+    return text
+
 def LawBJCase(page=2):
     hrefs = getUrls(page)
     for k, v in hrefs.items():
         path = 'law/caseBJ/'+k[-10:]+k[:-10]+'.txt'
         if not os.path.exists(path):
             try:
-                txt = spiderText(v)
+                #txt = spiderText(v)
+                txt = spiderText_lxml(v)
                 #print(txt)
                 with open(path, 'w', encoding = 'utf8') as f:
                     f.write(txt)

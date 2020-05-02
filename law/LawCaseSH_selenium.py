@@ -107,8 +107,5 @@ if __name__=="__main__":
     #driver = Firefox_hdless()
     #driver.get(url)
     LawShSCase(url)
-     LawShSCase(urll)
+    LawShSCase(urll)
     pass
-    
-    
-    

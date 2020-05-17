@@ -7,7 +7,7 @@ import requests
 import json
 
 class BaiDAI():
-    def __init__():
+    def __init__(self):
         self.__APP_ID = '10947352'
         self.__API_KEY = 'gELihIXKQxswEye4Wb3gCdsb'
         self.__SECRET_KEY = '2krKB6kQxfCdeuIDjGzXOfmqis7c1ByH'
@@ -25,7 +25,7 @@ class BaiDAI():
         data = json.loads(r.text)
         return data['access_token']
 
-    def textTaudiov1(self, text,vol=15,per=1,spd=4,pit=5,aue=6):
+    def Text2Audiov1(self, text,vol=15,per=1,spd=4,pit=5,aue=6):
         """
         tex:        合成的文本，使用UTF-8编码。小于512个中文字或者英文数字。
             （文本在百度服务器内转换为GBK后，长度必须小于1024字节）
@@ -41,7 +41,7 @@ class BaiDAI():
         rr=requests.get(uurl)
         return rr.content
 
-    def textTaudiov2(self,text,vol=15,per=1,spd=3,pit=5,aue=6,path='',pl=False):
+    def Text2Audiov2(self,text,vol=15,per=1,spd=3,pit=5,aue=6,path='',pl=False):
         """
         tex:        合成的文本，使用UTF-8编码。小于512个中文字或者英文数字。
                 （文本在百度服务器内转换为GBK后，长度必须小于1024字节）
@@ -70,7 +70,7 @@ class BaiDAI():
         if not isinstance(result, dict):
             return result
         
-    def audioText(self, filePath):
+    def Audio2Text(self, filePath):
         #要对段保存有一段语音的语音文件进行识别
         # 识别本地文件
         with open(filePath,'rb') as f:

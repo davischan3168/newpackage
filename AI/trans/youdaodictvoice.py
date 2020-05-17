@@ -7,7 +7,7 @@ import os
 import re
 from collections.abc import Iterable
 import requests
-import simpleaudio as sa
+#import simpleaudio as sa
 from pydub import AudioSegment
 from contextlib import contextmanager
 from os import chdir, getcwd, listdir, remove, makedirs
